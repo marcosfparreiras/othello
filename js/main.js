@@ -312,26 +312,28 @@ function searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece ) 
 	var i, j;
 	console.log('Pre look-rigt-down');
 	if( j_piece <= boardSize-2 && i_piece <= boardSize-2 ) {
-		console.log('Entrou look-rigt-down');
-		if( board[i_piece+1][j_piece+1] == opponent ) {
-			console.log('Entrou DEEP look-rigt-down');
-			for( i=i_piece+2, j=j_piece+2; i<boardSize && j<boardSize; i++, j++ ) {
-				// if( i>= boardSize || j>=boardSize ) {
-				// 	break;
-				// }
+		if (typeof board[i_piece+1] !== 'undefined') {
+			console.log('Entrou look-rigt-down');
+			if( board[i_piece+1][j_piece+1] == opponent ) {
+				console.log('Entrou DEEP look-rigt-down');
+				for( i=i_piece+2, j=j_piece+2; i<boardSize && j<boardSize; i++, j++ ) {
+					// if( i>= boardSize || j>=boardSize ) {
+					// 	break;
+					// }
 
-				if( board[i][j] == opponent ) {
-					continue;
-				}
-				else if( board[i][j] == player ) {
-					break;
-				}
-				else if (board[i_piece][j] == 0 ) {
-					possible_moves[i][j] = 1;
-					break;
-				}
-				else {
-					// alert('Erro inesperado no searchPossibleMoves');
+					if( board[i][j] == opponent ) {
+						continue;
+					}
+					else if( board[i][j] == player ) {
+						break;
+					}
+					else if (board[i_piece][j] == 0 ) {
+						possible_moves[i][j] = 1;
+						break;
+					}
+					else {
+						// alert('Erro inesperado no searchPossibleMoves');
+					}
 				}
 			}
 		}
@@ -397,21 +399,23 @@ function searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece ) {
 	// // look left-down
 	console.log('Pre left-down');
 	if( j_piece >= 1 && i_piece <= boardSize ) {
-		if( board[i_piece+1][j_piece-1] == opponent ) {
-			console.log('Entrou DEEP left-down');
-			for( i=i_piece+2, j=j_piece-2; i<boardSize && j>=0; i++, j--) {
-				if( board[i][j] == opponent ) {
-					continue;
-				}
-				else if( board[i][j] == player ) {
-					break;
-				}
-				else if ( board[i][j] == 0 ) {
-					possible_moves[i][j] = 1;
-					break;
-				}
-				else {
-					// alert('Erro inesperado no searchPossibleMoves');
+		if (typeof board[i_piece+1] !== 'undefined') {
+			if( board[i_piece+1][j_piece-1] == opponent ) {
+				console.log('Entrou DEEP left-down');
+				for( i=i_piece+2, j=j_piece-2; i<boardSize && j>=0; i++, j--) {
+					if( board[i][j] == opponent ) {
+						continue;
+					}
+					else if( board[i][j] == player ) {
+						break;
+					}
+					else if ( board[i][j] == 0 ) {
+						possible_moves[i][j] = 1;
+						break;
+					}
+					else {
+						// alert('Erro inesperado no searchPossibleMoves');
+					}
 				}
 			}
 		}

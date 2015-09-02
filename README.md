@@ -2,7 +2,8 @@
 Jogo Othello desenvolvido em HTML5 (comumente chamado de Reversi, apesar de haver diferenças entre os dois jogos)
 
 Para executar o jogo localmente, basta abrir o arquivo index.html no seu navegador.
-Outra maneira de executar o jogo é acessando o link: http://htmlpreview.github.io/?https://github.com/marcosfparreiras/othello/blob/master/index.html. Desta forma você executará o jogo na versão em que está no github.
+Outra maneira de executar o jogo é acessando o link: hhttp://marcosfparreiras.github.io/othello/. 
+	- Desta forma você executará o jogo na versão em que está no github.
 
 
 As funcionalidades implementadas neste jogo são:
