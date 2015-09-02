@@ -145,27 +145,28 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 	console.log('--------------------------------');
 	console.log('Peça - i: ' + i_piece + ', j: ' + j_piece );
 
+	// Movimentos horizontais e verticais 
 
-	// look right - backup
+	// look right
 	if( j_piece <= boardSize ) {
 		// console.log('got: ' + board[i_piece][j_piece+1]);
 		// console.log('player_turn: ' + player);
 		// console.log('opponent: ' + opponent);
 		if( board[i_piece][j_piece+1] == opponent ) {
-			console.log('encontrou oponente à esquerda');
+			// console.log('encontrou oponente à esquerda');
 			for( j=j_piece+2; j<boardSize; j++ ) {
-				console.log('no for');
+				// console.log('no for');
 				if( board[i_piece][j] == opponent ) {
-					console.log('opponent');
+					// console.log('opponent');
 					continue;
 				}
 				else if( board[i_piece][j] == player ) {
-					console.log('player');
+					// console.log('player');
 					break;
 				}
 				else if (board[i_piece][j] == 0 ) {
 					possible_moves[i_piece][j] = 1;
-					console.log('adicionou');
+					// console.log('adicionou');
 					break;
 				}
 				else {
@@ -175,32 +176,74 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 		}
 	}
 
-	console.log('--------------------------------');
+	// look left
+	if( j_piece >= 1 ) {
+		if( board[i_piece][j_piece-1] == opponent ) {
+			for( j=j_piece-2; j>=0; j--) {
+				if( board[i_piece][j] == opponent ) {
+					continue;
+				}
+				else if( board[i_piece][j] == player ) {
+					break;
+				}
+				else if (board[i_piece][j] == 0 ) {
+					possible_moves[i_piece][j] = 1;
+					break;
+				}
+				else {
+					alert('Erro inesperado no searchPossibleMoves');
+				}
+			}
+		}
+	}
 
+	// look up
+	if( i_piece >= 1 ) {
+		if( board[i_piece-1][j_piece] == opponent ) {
+			for( i=i_piece-2; i>=0; i--) {
+				if( board[i][j_piece] == opponent ) {
+					continue;
+				}
+				else if( board[i][j_piece] == player ) {
+					break;
+				}
+				else if ( board[i][j_piece] == 0 ) {
+					possible_moves[i][j_piece] = 1;
+					break;
+				}
+				else {
+					alert('Erro inesperado no searchPossibleMoves');
+				}
+			}
+		}
+	}
+	
+	// look down
+	if( i_piece <= boardSize ) {
+		if( board[i_piece+1][j_piece] == opponent ) {
+			for( i=i_piece+2; i<boardSize; i++) {
+				if( board[i][j_piece] == opponent ) {
+					continue;
+				}
+				else if( board[i][j_piece] == player ) {
+					break;
+				}
+				else if ( board[i][j_piece] == 0 ) {
+					possible_moves[i][j_piece] = 1;
+					break;
+				}
+				else {
+					alert('Erro inesperado no searchPossibleMoves');
+				}
+			}
+		}
+	}
 
 	// Comentados para focar em uma ação por vez (no momento, está sendo tratada a busca para a direita)
 
-	// // look left
-	// if( j_piece >= 1 ) {
-	// 	if( board[i_piece][j_piece-1] == opponent ) {
-	// 		possible_moves[i_piece][j_piece-2] = 1;
-	// 	}
-	// }
 
-	// // look up
-	// if( i_piece >= 1 ) {
-	// 	if( board[i_piece-1][j_piece] == opponent ) {
-	// 		possible_moves[i_piece-2][j_piece] = 1;
-	// 	}
-	// }
 
-	// // look down
-	// if( i_piece < boardSize - 1 ) {
-	// 	if( board[i_piece+1][j_piece] == opponent ) {
-	// 		possible_moves[i_piece+2][j_piece] = 1;
-	// 	}
-	// }
-
+	console.log('--------------------------------');
 
 
 
@@ -470,7 +513,8 @@ function drawFilledSquare( x, y, size ) {	// Desenha novo quadrado com início n
 	ctx.beginPath();
 	// ctx.rect(x+1,y+1,size-2,size-2);	// diferenças são para não sobrepor as bordas
 	ctx.rect(x,y,size,size);	// diferenças são para não sobrepor as bordas
-	ctx.fillStyle = '#CCCCCC';
+	// ctx.fillStyle = '#CCCCCC';
+	ctx.fillStyle = '#993333';
 	ctx.fill();
 	ctx.lineWidth = 1;
 	ctx.stroke();
