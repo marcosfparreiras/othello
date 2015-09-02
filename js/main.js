@@ -12,13 +12,12 @@ var pieceRaidus = 30;
 var screenWidth = 900;		// Define largura da tela
 var screenHeight = 600;		// Define altura da tela
 
-// Define número de casas que o tabuleiro terá na horizontal e na vertical (para o caso de criar níveis diferentes com tabuleiros de tamanhos diferentes)
-var boardHorizontalSpaces = 8;	// numero de casas na horizontal (default 8)
-var boardVerticalSpaces = 8; 	// numero de casas na vertical (default 8)
+// Define número de casas que o tabuleiro terá na horizontal e na vertical (padrão: 8)
+var boardSize = 8;
 
 // Calcula largura e altura do tabuleiro baseado no número de peças que serão usadas e o tamanho de cada uma delas
-var boardWidth = boardHorizontalSpaces * space_size;			// Define largura do canvas do tabuleiro
-var boardHeight = boardVerticalSpaces * space_size;			// Define altura do canvas do tabuleiro
+var boardWidth = boardSize * space_size;			// Define largura do canvas do tabuleiro
+var boardHeight = boardSize * space_size;			// Define altura do canvas do tabuleiro
 
 // Variáveis de offset usadas para centralizaro tabuleiro
 // var x_offset = ( screenWidth - 8*space_size ) / 2;
@@ -44,62 +43,162 @@ var player_turn = P1_TURN;
 // Matriz com possíveis movimentos do jogador da vez. 1 indica que aquele movimento é possível
 var possible_moves;
 
+var i_test = 0;
+var j_test = 0;
+
 // --------------Fim da definição das variáveis globais ----------
 
 // Função executada assim que a tela é carregada
 window.onload = function() {
-	initializeBoard();
-	// drawScreen();
-	// drawBoard();
-	// drawTurnControl();
-	drawCanvas()
-	canvas.addEventListener("mousedown", getMouseClick );
+	gameAction();
 
 	
-	// print_matrix( board )
 }
 
-function drawCanvas() {
-	drawScreen();
-	drawBoard();
-	drawTurnControl();
+function gameAction() {
+	canvas.addEventListener("mousedown", getMouseClick );
+	initializeBoard();
+	print_matrix( board, boardSize );
+	initializePossibleMoves();
+	getPossibleMoves( player_turn );
+	drawCanvas();
 }
+
+
 
 // Define movimentos possíveis para o jogador da rodada
-function get_possible_moves( player_turn ) {
-	possible_moves = initializePossibleMoves();
-	// possible_moves = new Array(boardVerticalSpaces);
-	// for (var i = 0; i < boardVerticalSpaces; i++) {
-	// 	possible_moves[i] = new Array(boardHorizontalSpaces);
-	// }
-	// for (var i = 0; i < boardVerticalSpaces; i++) {
-	// 	for (var j = 0; j < boardHorizontalSpaces; j++) {
-	// 		possible_moves[i][j] = 0;
-	// 	}
-	// }
-
-}
-
-function initializePossibleMoves() {
-	possible_moves = new Array(boardVerticalSpaces);
-	for (var i = 0; i < boardVerticalSpaces; i++) {
-		possible_moves[i] = new Array(boardHorizontalSpaces);
-	}
-	for (var i = 0; i < boardVerticalSpaces; i++) {
-		for (var j = 0; j < boardHorizontalSpaces; j++) {
+function getPossibleMoves( player ) {
+	// Define todas as posições de possible_moves como zero
+	for (var i = 0; i < boardSize; i++) {
+		for (var j = 0; j < boardSize; j++) {
 			possible_moves[i][j] = 0;
 		}
 	}
-	return possible_moves
+	
+	// console.log('entrou no getPossibleMoves');
+	// for (var i = 0; i < boardSize; i++) {
+	// 	for (var j = 0; j < boardSize; j++) {
+	// 		if( board[i][j] == player_turn ) {
+	// 			// possible_moves[i][j+1] = 1;
+	// 			searchPossibleMoves( player, i, j);
+	// 		}
+	// 	}
+	// }
+	possible_moves[0][1] = 1;
+	// possible_moves[i_test][j_test] = 1;
+	// i_test++;
+	// j_test++;
 }
+
+function searchPossibleMoves( player, i_piece, j_piece ) {
+	// var possible_moves = new Array();
+
+	// look up
+	var move = false;
+	var i = i_piece;
+	var i = j_piece;
+
+	// verifica se tem peça acima e se é do oponente
+	console.log("Peça: " + i_piece + ', ' + j_piece);
+	if( j_piece > 0 ) {	// Verifica se está a partir da segunda linha. Se estiver antes, não há jogada para cima
+		if( board[i_piece][j_piece-1] != 0 ) {	// Verifica se peça acima é oponente
+			for (var j = j_piece-2; j >= 0; j-- ) {
+				if( board[i][j] == 0 ) {	// Se casa for vazia, é movimento possível. Adiciona à matriz e finaliza execução do loop
+					possible_moves[i][j] = 1;
+					console.log("Peça: " + i_piece + ', ' + j_piece + " OK: " + i + ", " + j);
+					break;
+				}
+				else if( board[i][j] != 0 ) {
+					if( board[i][j] == player ) {
+						console.log("Peça: " + i_piece + ', ' + j_piece + " Peça do mesmo jogador: " + i + ", " + "j");
+						break;
+					}
+					else {
+						console.log("Peça: " + i_piece + ', ' + j_piece + " Peça do oponente: " + i + ", " + "j");
+						continue;
+					}
+				}
+			}
+		}
+	}
+
+	// look right
+	var move = false;
+	var i = i_piece;
+	var i = j_piece;
+
+	// verifica se tem peça à direita e se é do oponente
+	console.log("Peça: " + i_piece + ', ' + j_piece);
+	if( i_piece <= boardSize-1 ) {	// Verifica se está até a penúltima coluna. Se estiver depois, não há jogada para cima
+		if( board[i_piece][j_piece-1] != 0 ) {	// Verifica se peça acima é oponente
+			for (var j = j_piece-2; j >= 0; j-- ) {
+				if( board[i][j] == 0 ) {	// Se casa for vazia, é movimento possível. Adiciona à matriz e finaliza execução do loop
+					possible_moves[i][j] = 1;
+					console.log("Peça: " + i_piece + ', ' + j_piece + " OK: " + i + ", " + j);
+					break;
+				}
+				else if( board[i][j] != 0 ) {
+					if( board[i][j] == player ) {
+						console.log("Peça: " + i_piece + ', ' + j_piece + " Peça do mesmo jogador: " + i + ", " + "j");
+						break;
+					}
+					else {
+						console.log("Peça: " + i_piece + ', ' + j_piece + " Peça do oponente: " + i + ", " + "j");
+						continue;
+					}
+				}
+			}
+		}
+	}
+
+
+
+
+	// if( j > 0 && board[i][j-1] != 0 && board[i][j-1] != player ) {
+		// for (var j = j_piece-1; j >= 0 && j < boardHorizontalSpaces; j-- ) {
+		// 	if( board[i][j] != 0 && board[i][j] != player ) {	// Se peça de cima for do adiversário, continua caminhando para cima
+		// 		continue;
+		// 	}
+		// 	else if( board[i][j] != 0 && board[i][j] == player ){
+		// 		// move = false;
+		// 		break;	// Se peça
+		// 	}
+		// 	else if( board[i][j] == 0 ) {
+		// 		possible_moves[i][j] = 1;
+		// 		break;
+		// 	}
+		// }
+	// }	
+
+
+	// look down
+	
+	// look right
+	// look left
+
+	// look right-up
+	// look right-down
+
+	// look left-up
+	// look left-down
+
+
+}
+
+
 
 // Função chamada quando houer um clique dentro do canvas
 function getMouseClick( event ) {
 	if( addPiece( event ) ) {	
-		// drawBoard();
-		changeTurn();
-		drawCanvas()
+		newTurn();
 	}
+}
+
+function newTurn() {
+	changeTurn();
+	print_matrix( board, boardSize );
+	getPossibleMoves( player_turn );
+	drawCanvas();
 }
 
 // Troca o turno, passando a vez para o outro jogador
@@ -112,6 +211,10 @@ function changeTurn() {
 	}
 }
 
+function isValidMove( player, i, j ) {
+
+}
+
 // Adiciona nova peça ao tabuleiro. Se local clicado já estiver ocupado, retorna false. Caso contrário, adiciona peça e retorna true
 function addPiece( event ) {
 	var ret = false;
@@ -122,42 +225,33 @@ function addPiece( event ) {
 	var v_space = parseInt( ( y - y_offset ) / space_size ); 
 
 	if( x >= x_offset && x <= ( boardWidth + x_offset) && y >= y_offset && y <= ( boardHeight + y_offset) ) {
-		console.log( 'OK' );
-		var h_space = parseInt( ( x - x_offset ) / space_size );
-		var v_space = parseInt( ( y - y_offset ) / space_size ); 
+		console.log( 'Posição válida para a peça' );
+		var j = parseInt( ( x - x_offset ) / space_size ); // posiçao vertical da matriz
+		var i = parseInt( ( y - y_offset ) / space_size ); // posição horizontal da matriz
 
-		var message2 = 'h_space: ' + h_space;
-		var message3 = 'v_space: ' + v_space;
+		// if( possible_moves[h_space][v_space] ) {
 
-		console.log( message2 );
-		console.log( message3 );
+		var message2 = 'j: ' + j;
+		var message3 = 'i: ' + i;
 
-		if( board[h_space][v_space] ) {
-			console.log( 'ocupado' );
+		// console.log('------ posicao ------');
+		// console.log( message3 );
+		// console.log( message2 );
+
+		// if( board[h_space][v_space] ) {
+		if( board[i][j] ) {
+			// console.log( 'ocupado' );
 			ret = false;
 		}
 		else {
-			board[v_space][h_space] = player_turn;
-			console.log( 'livre' );
+			board[i][j] = player_turn;
+			// console.log( 'livre' );
 			ret = true;
 		}
+		// }
 	}
 	// print_matrix( board );
 	return ret
-
-	// var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-	// var message2 = 'h_space: ' + h_space;
-	// var message3 = 'v_space: ' + v_space;
-	// var message4 = 'x: ' + x + 'y: ' + y;
-
-	// console.log( message );
-	// console.log( message2 );
-	// console.log( message3 );
-	// console.log( message4 );
-
-	// if( h_space >= 0 && h_space < boardVerticalSpaces && v_space >= 0 && v_space < boardHorizontalSpaces ) {
-	// 	// console.log( 'OK' );
-	// }
 }
 
 // Retorna posição do clique com relação ao canvas. Retorno pode ser acessado como ret.x e ret.y
@@ -169,22 +263,33 @@ function getMousePos(canvas, evt) {
 	};
 }
 
-
+function initializePossibleMoves() {
+	possible_moves = new Array(boardSize);
+	for (var i = 0; i < boardSize; i++) {
+		possible_moves[i] = new Array(boardSize);
+	}
+	for (var i = 0; i < boardSize; i++) {
+		for (var j = 0; j < boardSize; j++) {
+			possible_moves[i][j] = 0;
+		}
+	}
+	return possible_moves
+}
 
 // Inicializa tabuleiro com todas as casas vazias - board[a][b] diz respeito à linha a e coluna b
 function initializeBoard() {
-	board = new Array(boardVerticalSpaces);			
-	for (var i = 0; i < boardVerticalSpaces; i++) {
-		board[i] = new Array(boardHorizontalSpaces);
+	board = new Array(boardSize);			
+	for (var i = 0; i < boardSize; i++) {
+		board[i] = new Array(boardSize);
 	}
-	for (var i = 0; i < boardVerticalSpaces; i++) {
-		for (var j = 0; j < boardHorizontalSpaces; j++) {
+	for (var i = 0; i < boardSize; i++) {
+		for (var j = 0; j < boardSize; j++) {
 			board[i][j] = 0;
 		}
 	}
 
-	h_half_board_pieces = parseInt( boardVerticalSpaces / 2 );
-	v_half_board_pieces = parseInt( boardHorizontalSpaces / 2 );
+	h_half_board_pieces = parseInt( boardSize / 2 );
+	v_half_board_pieces = parseInt( boardSize / 2 );
 
 	// Posiciona as duas peças iniciais do Player 1
 	board[v_half_board_pieces][h_half_board_pieces-1] = P1_PIECE;
@@ -199,8 +304,8 @@ function getScore() {
 	var p1_score = 0;
 	var p2_score = 0;
 
-	for( i=0; i<boardVerticalSpaces; i++ ) {
-		for( j=0; j<boardHorizontalSpaces; j++ ) {
+	for( i=0; i<boardSize; i++ ) {
+		for( j=0; j<boardSize; j++ ) {
 			if( board[i][j] == P1_PIECE ) {
 				p1_score++;
 			}
@@ -215,6 +320,15 @@ function getScore() {
 	};
 }
 
+function drawCanvas() {
+	drawScreen();
+	drawBoard();
+	drawTurnControl();
+}
+
+function drawPossibleMoves() {
+
+}
 
 // Imprime parte da tela que informará quantas peças cada jogador tem e de quem é o turno
 function drawTurnControl() {
@@ -236,24 +350,17 @@ function drawTurnControl() {
 	var c = document.getElementById("canvas");
 	var ctx = c.getContext("2d");
 
-	// var p1_score_text = "Player 1" + score.p1;
-	// var p2_score_text = "Player 2" + score.p2;
 	var p1_score_text = "Player 1";
 	var p2_score_text = "Player 2";
 	ctx.font = "30px Arial";
-	// ctx.fillStyle = "grey";
 	ctx.fillStyle = "black";
-
-	// ctx.fillText("Pontuação",x_start,y_start);
 
 	ctx.fillText(p1_score_text, x_p1_score, y_p1_score);
 	ctx.fillText(p2_score_text, x_p2_score, y_p2_score);
 
 	ctx.fillText("x " + score.p1, x_start+120, y_start+80);
 	ctx.fillText("x " + score.p2, x_start+120, y_start+200);
-	// ctx.fillText(p2_score_text, x_p2_score, y_p2_score);
 
-	
 	if( player_turn == P1_TURN ) {
 		turn_message += "Player 1";
 	}
@@ -266,20 +373,22 @@ function drawTurnControl() {
 	drawPiece( x_start+90, y_start+190, pieceRaidus/2, P2_COLOR );
 }
 
-
-
 // Desenha tabuleiro (já preenchido com as peças que o compõem)
 function drawBoard() {	// Desenha tabuleiro (todas as casas)
 	// Desenha tabuleiro vazio
-	for( i=0; i<boardVerticalSpaces; i++ ) {
-		for( j=0; j<boardHorizontalSpaces; j++ ) {
+	for( i=0; i<boardSize; i++ ) {
+		for( j=0; j<boardSize; j++ ) {
 			drawEmptySquare( i*space_size + x_offset, j*space_size + y_offset, space_size );
+
+			if( possible_moves[i][j] == 1 ) {
+				drawFilledSquare( i*space_size + x_offset, j*space_size + y_offset, space_size );
+			}
 		}
 	}
 
 	// Desenha peças que já estão no tabuleiro
-	for (var i = 0; i < boardVerticalSpaces; i++) {
-		for (var j = 0; j < boardHorizontalSpaces; j++) {
+	for (var i = 0; i < boardSize; i++) {
+		for (var j = 0; j < boardSize; j++) {
 			if( board[i][j] == P1_PIECE )  {
 				drawPiece( x_offset - space_size/2 + (j+1)*space_size, y_offset - space_size/2 + (i+1)*space_size, pieceRaidus, P1_COLOR);
 			}
@@ -304,8 +413,23 @@ function drawScreen() {
 function drawEmptySquare( x, y, size ) {	// Desenha novo quadrado com início no onto (x,y)
 	var c = document.getElementById("canvas");
 	var ctx = c.getContext("2d");
+	ctx.beginPath();
 	ctx.rect(x,y,size,size);
 	ctx.stroke();
+	ctx.closePath();
+}
+
+function drawFilledSquare( x, y, size ) {	// Desenha novo quadrado com início no onto (x,y)
+	var c = document.getElementById("canvas");
+	var ctx = c.getContext("2d");
+	ctx.beginPath();
+	ctx.rect(x+1,y+1,size-2,size-2);	// diferenças são para não sobrepor as bordas
+
+	ctx.fillStyle = '#CCCCCC';
+	ctx.fill();
+	ctx.lineWidth = 0;
+	ctx.closePath();
+
 }
 
 // Desenha círculo (peça) com início no ponto (x,y), de raio radius e de cor color
@@ -323,16 +447,18 @@ function drawPiece( x, y, radius, color ) {
 }
 
 // Função usada para depuração - Imprime a matriz no console JS do browser
-function print_matrix( matrix ) {
-	console.log( 'teste' );
-	for (var i = 0; i < boardVerticalSpaces; i++) {
-		console.log( matrix[i].join(" ") );
+function print_matrix( matrix, n ) {
+	var line = '';
+	for( i=0; i<n; i++ ) {
+		for( j=0; j<n; j++ ) {
+			line += matrix[i][j] + ' ';
+		}
+		console.log(line);
+		line = '';
 	}
 }
 
-function gameAction() {
 
-}
 
 function startGame() {
 
