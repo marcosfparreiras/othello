@@ -9,7 +9,7 @@ var space_size = 60;
 var pieceRaidus = 20;
 
 // Define largura e altura da tela, respectivamente
-var screenWidth = 900;		// Define largura da tela
+var screenWidth = 800;		// Define largura da tela
 var screenHeight = 500;		// Define altura da tela
 
 // Define número de casas que o tabuleiro terá na horizontal e na vertical (padrão: 8)
