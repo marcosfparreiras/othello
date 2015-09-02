@@ -214,9 +214,9 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 	// Movimentos horizontais e verticais 
 
 	searchPossibleMovesLookRight( player, opponent, i_piece, j_piece );
-	// searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece );
+	searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece );
 	searchPossibleMovesLookUp( player, opponent, i_piece, j_piece );
-	// searchPossibleMovesLookDown( player, opponent, i_piece, j_piece );
+	searchPossibleMovesLookDown( player, opponent, i_piece, j_piece );
 
 	// searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece );
 	// searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece );
@@ -277,12 +277,15 @@ function searchPossibleMovesLookRight( player, opponent, i_piece, j_piece ) {
 
 function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece ) {
 	var j;
+	var changeable_pieces = new Array();
 	if( j_piece >= 1 ) {
 		// console.log('Entrou look-left');
 		if( board[i_piece][j_piece-1] == opponent ) {
+			changeable_pieces.push( { i: i_piece, j: j_piece-1} );
 			// console.log('Entrou DEEP look-left');
 			for( j=j_piece-2; j>=0; j--) {
 				if( board[i_piece][j] == opponent ) {
+					changeable_pieces.push( {i: i_piece, j: j} );
 					continue;
 				}
 				else if( board[i_piece][j] == player ) {
@@ -290,6 +293,8 @@ function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece ) {
 				}
 				else if (board[i_piece][j] == 0 ) {
 					possible_moves[i_piece][j] = 1;
+					pieces_to_switch[i_piece][j] = changeable_pieces;
+					printPiecesToSwitch();
 					break;
 				}
 				else {
@@ -333,14 +338,17 @@ function searchPossibleMovesLookUp( player, opponent, i_piece, j_piece ) {
 
 function searchPossibleMovesLookDown( player, opponent, i_piece, j_piece ) {
 	var i;
+	var changeable_pieces = new Array();
 	// print_matrix(board, boardSize);
 	if( i_piece <= boardSize-1 ) {
 		if (typeof board[i_piece+1] !== 'undefined') {	// verifica se array na posição board[i_piece + 1] está definido. Se não estiver, não prossegue
 			if( board[i_piece+1][j_piece] == opponent ) {
+				changeable_pieces.push( { i: i_piece+1, j: j_piece} );
 				for( i=i_piece+2; i<boardSize; i++ ) {
 					// console.log('no for');
 					if( board[i][j_piece] == opponent ) {
 						// console.log('opponent');
+						changeable_pieces.push( {i: i, j: j_piece} );
 						continue;
 					}
 					else if( board[i][j_piece] == player ) {
@@ -349,6 +357,8 @@ function searchPossibleMovesLookDown( player, opponent, i_piece, j_piece ) {
 					}
 					else if (board[i][j_piece] == 0 ) {
 						possible_moves[i][j_piece] = 1;
+						pieces_to_switch[i][j_piece] = changeable_pieces;
+						printPiecesToSwitch();
 						// console.log('adicionou');
 						break;
 					}
