@@ -42,7 +42,6 @@ var player_turn = P1_TURN;
 
 // Matriz com possíveis movimentos do jogador da vez. 1 indica que aquele movimento é possível
 var possible_moves;
-// var possible_moves = new Array( boardSize );
 
 var i_test = 0;
 var j_test = 0;
@@ -52,16 +51,16 @@ var j_test = 0;
 // Função executada assim que a tela é carregada
 window.onload = function() {
 	gameAction();
-};
+
+	
+}
 
 function gameAction() {
+	canvas.addEventListener("mousedown", getMouseClick );
 	initializeBoard();
+	print_matrix( board, boardSize );
 	initializePossibleMoves();
 	getPossibleMoves( player_turn );
-	canvas.addEventListener("mousedown", getMouseClick );
-	console.log('---- Matriz board -----');
-	print_matrix( board, boardSize );
-	console.log('---- Matriz possible_moves -----');
 	print_matrix( possible_moves, boardSize );
 	drawCanvas();
 }
@@ -108,12 +107,6 @@ function getPossibleMoves( player ) {
 			possible_moves[i][j] = 0;
 		}
 	}
-
-	// possible_moves[0][1] = 1;
-	// print_matrix( possible_moves, boardSize );
-
-	// board[0][2] = 2;
-	// print_matrix( board, boardSize );
 	
 	// console.log('entrou no getPossibleMoves');
 	for( i = 0; i < boardSize; i++) {
@@ -121,7 +114,6 @@ function getPossibleMoves( player ) {
 			if( board[i][j] == player ) {
 				// possible_moves[i][j+1] = 1;
 				searchPossibleMoves( player, i, j);
-				// possible_moves[i][j] = 1;
 			}
 		}
 	}
@@ -132,52 +124,7 @@ function getPossibleMoves( player ) {
 }
 
 function searchPossibleMoves( player_turn, i_piece, j_piece ) {
-	var player, opponent;
-	if( player_turn == P1_TURN ) {
-		player = P1_TURN;
-		opponent = P2_TURN;
-	}
-	else {
-		player = P2_TURN;
-		opponent = P1_TURN;
-	}
-
-	// look right
-	if( j_piece <= boardSize ) {
-		// console.log('got: ' + board[i_piece][j_piece+1]);
-		// console.log('player_turn: ' + player);
-		// console.log('opponent: ' + opponent);
-		if( board[i_piece][j_piece+1] == opponent ) {
-			// console.log('entrou');
-			possible_moves[i_piece][j_piece+2] = 1;
-		}
-	}
-
-	// look left
-	if( j_piece >= 1 ) {
-		if( board[i_piece][j_piece-1] == opponent ) {
-			possible_moves[i_piece][j_piece-2] = 1;
-		}
-	}
-
-	// look up
-	if( i_piece >= 1 ) {
-		if( board[i_piece-1][j_piece] == opponent ) {
-			possible_moves[i_piece-2][j_piece] = 1;
-		}
-	}
-
-	// look down
-	if( i_piece < boardSize - 1 ) {
-		if( board[i_piece+1][j_piece] == opponent ) {
-			possible_moves[i_piece+2][j_piece] = 1;
-		}
-	}
-
-
-
-
-	// possible_moves[i_piece][j_piece] = 1;
+	possible_moves[j_piece][i_piece] = 1;
 
 
 }
@@ -194,26 +141,25 @@ function addPiece( event ) {
 	var mousePos = getMousePos(canvas, event);
 	var x = mousePos.x;
 	var y = mousePos.y;
-	//var h_space = parseInt( ( x - x_offset ) / space_size );
-	//var v_space = parseInt( ( y - y_offset ) / space_size ); 
-	var i, j;
+	var h_space = parseInt( ( x - x_offset ) / space_size );
+	var v_space = parseInt( ( y - y_offset ) / space_size ); 
 
 	if( x >= x_offset && x <= ( boardWidth + x_offset) && y >= y_offset && y <= ( boardHeight + y_offset) ) {
 		console.log( 'Posição válida para a peça' );
-		i = parseInt( ( y - y_offset ) / space_size ); // posição horizontal da matriz
-		j = parseInt( ( x - x_offset ) / space_size ); // posiçao vertical da matriz
+		var j = parseInt( ( x - x_offset ) / space_size ); // posiçao vertical da matriz
+		var i = parseInt( ( y - y_offset ) / space_size ); // posição horizontal da matriz
 
 		// if( possible_moves[h_space][v_space] ) {
 
-		//var message2 = 'j: ' + j;
-		//var message3 = 'i: ' + i;
+		var message2 = 'j: ' + j;
+		var message3 = 'i: ' + i;
 
 		// console.log('------ posicao ------');
 		// console.log( message3 );
 		// console.log( message2 );
 
 		// if( board[h_space][v_space] ) {
-		if( board[i][j] != 0 ) {
+		if( board[i][j] ) {
 			// console.log( 'ocupado' );
 			ret = false;
 		}
@@ -225,7 +171,7 @@ function addPiece( event ) {
 		// }
 	}
 	// print_matrix( board );
-	return ret;
+	return ret
 }
 
 // Retorna posição do clique com relação ao canvas. Retorno pode ser acessado como ret.x e ret.y
@@ -247,6 +193,7 @@ function initializePossibleMoves() {
 			possible_moves[i][j] = 0;
 		}
 	}
+	return possible_moves
 }
 
 // Inicializa tabuleiro com todas as casas vazias - board[a][b] diz respeito à linha a e coluna b
@@ -276,7 +223,7 @@ function initializeBoard() {
 function getScore() {
 	var p1_score = 0;
 	var p2_score = 0;
-	var i, j;
+
 	for( i=0; i<boardSize; i++ ) {
 		for( j=0; j<boardSize; j++ ) {
 			if( board[i][j] == P1_PIECE ) {
@@ -301,8 +248,8 @@ function drawCanvas() {
 
 // Imprime parte da tela que informará quantas peças cada jogador tem e de quem é o turno
 function drawTurnControl() {
-	//var width = screenWidth - boardWidth - 3*x_offset;
-	//var height = screenHeight - 2*y_offset;
+	var width = screenWidth - boardWidth - 3*x_offset;
+	var height = screenHeight - 2*y_offset;
 
 	var x_start = 2*x_offset + boardWidth;
 	var y_start = y_offset + 30;
@@ -377,13 +324,12 @@ function drawPieces() {
 }
 
 // Desenha tabuleiro (já preenchido com as peças que o compõem)
-// Por algum motivo, para a impressão ficar correta, está sendo necessário verificar a posição [j][i]
 function drawBoard() {	// Desenha tabuleiro (todas as casas)
 	// Desenha tabuleiro vazio
 	for(var i=0; i<boardSize; i++ ) {
 		for(var j=0; j<boardSize; j++ ) {
 			// drawEmptySquare( i*space_size + x_offset, j*space_size + y_offset, space_size );
-			if( possible_moves[j][i] == 0 ) {
+			if( possible_moves[i][j] == 0 ) {
 				drawEmptySquare( i*space_size + x_offset, j*space_size + y_offset, space_size );
 			}
 			else {
@@ -467,7 +413,6 @@ function drawPiece( x, y, radius, color ) {
 // Função usada para depuração - Imprime a matriz no console JS do browser
 function print_matrix( matrix, n ) {
 	var line = '';
-	var i, j;
 	for( i=0; i<n; i++ ) {
 		for( j=0; j<n; j++ ) {
 			line += matrix[i][j] + ' ';
