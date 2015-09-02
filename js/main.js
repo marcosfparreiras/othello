@@ -132,7 +132,7 @@ function getPossibleMoves( player ) {
 }
 
 function searchPossibleMoves( player_turn, i_piece, j_piece ) {
-	var player, opponent;
+	var player, opponent, i, j;
 	if( player_turn == P1_TURN ) {
 		player = P1_TURN;
 		opponent = P2_TURN;
@@ -142,37 +142,64 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 		opponent = P1_TURN;
 	}
 
-	// look right
+	console.log('--------------------------------');
+	console.log('Peça - i: ' + i_piece + ', j: ' + j_piece );
+
+
+	// look right - backup
 	if( j_piece <= boardSize ) {
 		// console.log('got: ' + board[i_piece][j_piece+1]);
 		// console.log('player_turn: ' + player);
 		// console.log('opponent: ' + opponent);
 		if( board[i_piece][j_piece+1] == opponent ) {
-			// console.log('entrou');
-			possible_moves[i_piece][j_piece+2] = 1;
+			console.log('encontrou oponente à esquerda');
+			for( j=j_piece+2; j<boardSize; j++ ) {
+				console.log('no for');
+				if( board[i_piece][j] == opponent ) {
+					console.log('opponent');
+					continue;
+				}
+				else if( board[i_piece][j] == player ) {
+					console.log('player');
+					break;
+				}
+				else if (board[i_piece][j] == 0 ) {
+					possible_moves[i_piece][j] = 1;
+					console.log('adicionou');
+					break;
+				}
+				else {
+					alert('Erro inesperado no searchPossibleMoves');
+				}
+			}
 		}
 	}
 
-	// look left
-	if( j_piece >= 1 ) {
-		if( board[i_piece][j_piece-1] == opponent ) {
-			possible_moves[i_piece][j_piece-2] = 1;
-		}
-	}
+	console.log('--------------------------------');
 
-	// look up
-	if( i_piece >= 1 ) {
-		if( board[i_piece-1][j_piece] == opponent ) {
-			possible_moves[i_piece-2][j_piece] = 1;
-		}
-	}
 
-	// look down
-	if( i_piece < boardSize - 1 ) {
-		if( board[i_piece+1][j_piece] == opponent ) {
-			possible_moves[i_piece+2][j_piece] = 1;
-		}
-	}
+	// Comentados para focar em uma ação por vez (no momento, está sendo tratada a busca para a direita)
+
+	// // look left
+	// if( j_piece >= 1 ) {
+	// 	if( board[i_piece][j_piece-1] == opponent ) {
+	// 		possible_moves[i_piece][j_piece-2] = 1;
+	// 	}
+	// }
+
+	// // look up
+	// if( i_piece >= 1 ) {
+	// 	if( board[i_piece-1][j_piece] == opponent ) {
+	// 		possible_moves[i_piece-2][j_piece] = 1;
+	// 	}
+	// }
+
+	// // look down
+	// if( i_piece < boardSize - 1 ) {
+	// 	if( board[i_piece+1][j_piece] == opponent ) {
+	// 		possible_moves[i_piece+2][j_piece] = 1;
+	// 	}
+	// }
 
 
 
