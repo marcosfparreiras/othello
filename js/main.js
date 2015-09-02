@@ -74,7 +74,7 @@ function gameAction() {
 }
 
 // Função chamada quando houer um clique dentro do canvas
-//	 	Constantes definidas:
+//	 	Constantes usadas:
 // 			var IN_BOARD_VALID = 1
 // 			var IN_BOARD_INVALID = 2
 // 			var OUT_BOARD = 3
@@ -458,9 +458,10 @@ function addPiece( event ) {
 		// console.log( message2 );
 
 		// if( board[h_space][v_space] ) {
+		// Verifica se casa está ocupada
 		if( board[i][j] != 0 ) {
 			// console.log( 'ocupado' );
-			ret = OUT_BOARD;
+			ret = IN_BOARD_INVALID;
 		}
 		else {
 			if( possible_moves[i][j] ) {
