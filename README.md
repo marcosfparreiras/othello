@@ -1,7 +1,8 @@
 # othello
 Jogo Othello desenvolvido em HTML5 (comumente chamado de Reversi, apesar de haver diferenças entre os dois jogos)
 
-Para executar o jogo, basta abrir o arquivo index.html no seu navegador
+Para executar o jogo localmente, basta abrir o arquivo index.html no seu navegador.
+Outra maneira de executar o jogo é acessando o link: http://htmlpreview.github.io/?https://github.com/marcosfparreiras/othello/blob/master/index.html. Desta forma você executará o jogo na versão em que está no github.
 
 
 As funcionalidades implementadas neste jogo são:
@@ -28,3 +29,7 @@ Opções de funcionalidades listadas
 	5- Poda alfa-beta para evitar buscas em ramos desnecessários durante a aplicação do algoritmo Mini-Max (10%)
 	6- Modo de debug que mostra, a cada momento, quais são as jogadas válidas (até 6%)
 	7- Qualquer outra idéia que torne o jogo melhor ou mais bonito. Essas idéias precisam ser documentadas e explicadas no documento de entrega do trabalho e a pontuação será dada de acordo com a complexidade e a qualidade da implementação
+
+
+	(opcional, +3%) O link para um vídeo curto (youtube, vimeo, dailymotion etc.) do seu jogo mostrando as opções implementadas
+

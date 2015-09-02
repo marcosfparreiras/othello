@@ -44,6 +44,13 @@ var player_turn = P1_TURN;
 var possible_moves;
 // var possible_moves = new Array( boardSize );
 
+// Constantes usadas para controle de retorno da função addPiece( event )
+var IN_BOARD_VALID = 1
+var IN_BOARD_INVALID = 2
+var OUT_BOARD = 3
+
+
+
 var i_test = 0;
 var j_test = 0;
 
@@ -67,9 +74,30 @@ function gameAction() {
 }
 
 // Função chamada quando houer um clique dentro do canvas
+//	 	Constantes definidas:
+// 			var IN_BOARD_VALID = 1
+// 			var IN_BOARD_INVALID = 2
+// 			var OUT_BOARD = 3
 function getMouseClick( event ) {
-	if( addPiece( event ) ) {	
+	var add_piece_ok_sound = document.getElementById('add_piece_ok');
+	var add_piece_error_sound = document.getElementById('add_piece_error');
+
+	// dá stop no som de add_piece_ok para que novo som possa ser reproduzido
+	add_piece_ok_sound.pause();
+	add_piece_ok_sound.currentTime = 0;
+	// dá stop no som de add_piece_error para que novo som possa ser reproduzido
+	add_piece_error_sound.pause();
+	add_piece_error_sound.currentTime = 0;
+	// document.getElementById('add_piece_ok').stop();	
+	// document.getElementById('add_piece_error').stop();	
+	if( addPiece( event ) == IN_BOARD_VALID ) {
+		add_piece_ok_sound.play();
+		// document.getElementById('add_piece_ok').play();	
 		newTurn();
+	}
+	else if( addPiece( event ) == IN_BOARD_INVALID ) {
+		add_piece_error_sound.play();
+		// document.getElementById('add_piece_error').play();	
 	}
 }
 
@@ -398,8 +426,16 @@ function searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece ) {
 
 
 // Adiciona nova peça ao tabuleiro. Se local clicado já estiver ocupado, retorna false. Caso contrário, adiciona peça e retorna true
+// return
+//		1: clique dentro do tabuleiro em casa válida
+//		2: clique dentro do tabuleiro em casa inválida
+//		3: clique fora o tabuleiro
+//	 	Constantes definidas:
+// 			var IN_BOARD_VALID = 1
+// 			var IN_BOARD_INVALID = 2
+// 			var OUT_BOARD = 3
 function addPiece( event ) {
-	var ret = false;
+	var ret = OUT_BOARD;
 	var mousePos = getMousePos(canvas, event);
 	var x = mousePos.x;
 	var y = mousePos.y;
@@ -424,17 +460,17 @@ function addPiece( event ) {
 		// if( board[h_space][v_space] ) {
 		if( board[i][j] != 0 ) {
 			// console.log( 'ocupado' );
-			ret = false;
+			ret = OUT_BOARD;
 		}
 		else {
 			if( possible_moves[i][j] ) {
 				board[i][j] = player_turn;
 				// console.log( 'livre' );
-				ret = true;
+				ret = IN_BOARD_VALID;
 			}
 			else {
-				alert('Você deve posicionar uma peço numa posição válida - marcada por uma cor diferente');
-				ret = false;
+				// alert('Você deve posicionar uma peço numa posição válida - marcada por uma cor diferente');
+				ret = IN_BOARD_INVALID;
 			}
 		}
 		// }

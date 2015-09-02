@@ -7,6 +7,26 @@
         <link rel="stylesheet" href="css/style.css" />
 	</head>
 	<body>
+		<!-- <audio src="audio/audio.ogg" controls autoplay loop> -->
+		<audio id="backgroud_sound" loop preload="auto">
+			<source src="audio/backgroud_sound.mp3" />
+			<p>Seu navegador não suporta o elemento audio </p>
+		</audio>
+		<audio id="add_piece_ok">
+			<source src="audio/add_piece_ok_two_parts.wav" />
+			<!-- <source src="audio/add_piece_ok_metal.wav" /> -->
+			<p>Seu navegador não suporta o elemento audio </p>
+		</audio>
+		<audio id="add_piece_error">
+			<source src="audio/add_piece_error.wav" />
+			<p>Seu navegador não suporta o elemento audio </p>
+		</audio>
+		<div>
+		  <button onclick="document.getElementById('backgroud_sound').play()">Reproduzir o áudio</button>
+		  <button onclick="document.getElementById('backgroud_sound').pause()">Pausar o áudio</button>
+		  <button onclick="document.getElementById('backgroud_sound').volume+=0.1">Aumentar o volume</button>
+		  <button onclick="document.getElementById('backgroud_sound').volume-=0.1">Diminuir o volume</button>
+		</div>
 		<!-- <canvas id="gameCanvas" onclick="drawAvatar();" width="800" height="400"></canvas> -->
 		<!-- <canvas id="p1Pannel" ></canvas> -->
 		<canvas id="canvas" ></canvas>
