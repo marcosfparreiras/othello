@@ -4,13 +4,13 @@
 // ---------------- Definição das variáveis globais ----------
 
 // Define tamanho de cada um dos 64 quadrados (8x8) do tabuleiro
-var space_size = 70;
+var space_size = 60;
 // Define raio das peças que serão poscionadas sobre o tabuleiro
-var pieceRaidus = 30;
+var pieceRaidus = 20;
 
 // Define largura e altura da tela, respectivamente
 var screenWidth = 900;		// Define largura da tela
-var screenHeight = 600;		// Define altura da tela
+var screenHeight = 500;		// Define altura da tela
 
 // Define número de casas que o tabuleiro terá na horizontal e na vertical (padrão: 8)
 var boardSize = 8;
