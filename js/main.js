@@ -176,7 +176,7 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 		}
 	}
 
-	// look left
+	// // look left
 	if( j_piece >= 1 ) {
 		if( board[i_piece][j_piece-1] == opponent ) {
 			for( j=j_piece-2; j>=0; j--) {
@@ -197,7 +197,7 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 		}
 	}
 
-	// look up
+	// // look up
 	if( i_piece >= 1 ) {
 		if( board[i_piece-1][j_piece] == opponent ) {
 			for( i=i_piece-2; i>=0; i--) {
@@ -218,7 +218,7 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 		}
 	}
 	
-	// look down
+	// // look down
 	if( i_piece <= boardSize ) {
 		if( board[i_piece+1][j_piece] == opponent ) {
 			for( i=i_piece+2; i<boardSize; i++) {
@@ -239,10 +239,99 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 		}
 	}
 
+	// Movimentos Diagonais
+
+	// look right-down
+	if( j_piece <= boardSize-2 && i_piece <= boardSize-2 ) {
+		if( board[i_piece+1][j_piece+1] == opponent ) {
+			for( i=i_piece+2, j=j_piece+2; i<boardSize && j<boardSize; i++, j++ ) {
+				// if( i>= boardSize || j>=boardSize ) {
+				// 	break;
+				// }
+
+				if( board[i][j] == opponent ) {
+					continue;
+				}
+				else if( board[i][j] == player ) {
+					break;
+				}
+				else if (board[i_piece][j] == 0 ) {
+					possible_moves[i][j] = 1;
+					break;
+				}
+				else {
+					// alert('Erro inesperado no searchPossibleMoves');
+				}
+			}
+		}
+	}
+
+	// look left-up
+	if( j_piece >= 1 && i_piece >= 1 ) {
+		if( board[i_piece-1][j_piece-1] == opponent ) {
+			for( i=i_piece-2, j=j_piece-2; i>=0 && j>=0 ; i--, j--) {
+				if( board[i][j] == opponent ) {
+					continue;
+				}
+				else if( board[i][j] == player ) {
+					break;
+				}
+				else if (board[i_piece][j] == 0 ) {
+					possible_moves[i][j] = 1;
+					break;
+				}
+				else {
+					// alert('Erro inesperado no searchPossibleMoves');
+				}
+			}
+		}
+	}
+
+	// look right-up
+	if( j_piece <= boardSize-2 && i_piece >= 1 ) {
+		if( board[i_piece-1][j_piece+1] == opponent ) {
+			for( i=i_piece-2, j=j_piece+2; i>=0 && j<boardSize; i--, j++ ) {
+				if( board[i][j] == opponent ) {
+					continue;
+				}
+				else if( board[i][j] == player ) {
+					break;
+				}
+				else if (board[i_piece][j] == 0 ) {
+					possible_moves[i][j] = 1;
+					break;
+				}
+				else {
+					// alert('Erro inesperado no searchPossibleMoves');
+				}
+			}
+		}
+	}
+
+	// // look left-down
+	if( j_piece >= 1 && i_piece <= boardSize ) {
+		if( board[i_piece+1][j_piece-1] == opponent ) {
+			for( i=i_piece+2, j=j_piece-2; i<boardSize && j>=0; i++, j--) {
+				if( board[i][j] == opponent ) {
+					continue;
+				}
+				else if( board[i][j] == player ) {
+					break;
+				}
+				else if ( board[i][j] == 0 ) {
+					possible_moves[i][j] = 1;
+					break;
+				}
+				else {
+					// alert('Erro inesperado no searchPossibleMoves');
+				}
+			}
+		}
+
+	}
+
+
 	// Comentados para focar em uma ação por vez (no momento, está sendo tratada a busca para a direita)
-
-
-
 	console.log('--------------------------------');
 
 
@@ -288,9 +377,15 @@ function addPiece( event ) {
 			ret = false;
 		}
 		else {
-			board[i][j] = player_turn;
-			// console.log( 'livre' );
-			ret = true;
+			if( possible_moves[i][j] ) {
+				board[i][j] = player_turn;
+				// console.log( 'livre' );
+				ret = true;
+			}
+			else {
+				alert('Você deve posicionar uma peço numa posição válida - marcada por uma cor diferente');
+				ret = false;
+			}
 		}
 		// }
 	}
