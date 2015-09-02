@@ -72,6 +72,7 @@ function gameAction() {
 	initializePiecesToSwitch();
 	getPossibleMoves( player_turn );
 	canvas.addEventListener("mousedown", getMouseClick );
+	// printPiecesToSwitch();
 
 	// console.log('---- Matriz board -----');
 	// print_matrix( board, boardSize );
@@ -81,7 +82,6 @@ function gameAction() {
 	// console.log('---- Matriz pieces_to_switch -----');
 	// print_matrix( pieces_to_switch, boardSize );
 	// pieces_to_switch[0][0].push( { i: 1, j: 1} );
-	printPiecesToSwitch();
 
 	// pos = pieces_to_switch[0][0][0];
 
@@ -123,8 +123,7 @@ function getMouseClick( event ) {
 	// dá stop no som de add_piece_error para que novo som possa ser reproduzido
 	add_piece_error_sound.pause();
 	add_piece_error_sound.currentTime = 0;
-	// document.getElementById('add_piece_ok').stop();	
-	// document.getElementById('add_piece_error').stop();	
+
 	if( addPiece( event ) == IN_BOARD_VALID ) {
 		add_piece_ok_sound.play();
 		switchPieces(pos_clicked.i, pos_clicked.j, player_turn);
@@ -140,14 +139,14 @@ function getMouseClick( event ) {
 }
 
 function newTurn() {
-	changeTurn();
 	// Limpa matriz de peças a serem trocadas
 	for(var i=0; i<boardSize; i++) {
 		for(var j=0; j<boardSize; j++) {
 			pieces_to_switch[i][j] = new Array();
 		}
 	}
-	getPossibleMoves( player_turn );
+	changeTurn();
+	getPossibleMoves( player_turn );	// Durante esta ação é também preenchida a matriz pieces_to_switch
 	// console.log('---- Matriz board -----');
 	// print_matrix( board, boardSize );
 	// console.log('---- Matriz possible_moves -----');
@@ -262,8 +261,10 @@ function searchPossibleMovesLookRight( player, opponent, i_piece, j_piece ) {
 				}
 				else if (board[i_piece][j] == 0 ) {
 					possible_moves[i_piece][j] = 1;
-					pieces_to_switch[i_piece][j] = changeable_pieces;
-					printPiecesToSwitch();
+					// if( pieces_to_switch[i_piece][j] )
+					// pieces_to_switch[i_piece][j] = changeable_pieces;
+					Array.prototype.push.apply(pieces_to_switch[i_piece][j], changeable_pieces);
+					// printPiecesToSwitch();
 					// console.log('adicionou');
 					break;
 				}
@@ -293,8 +294,9 @@ function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece ) {
 				}
 				else if (board[i_piece][j] == 0 ) {
 					possible_moves[i_piece][j] = 1;
-					pieces_to_switch[i_piece][j] = changeable_pieces;
-					printPiecesToSwitch();
+					// pieces_to_switch[i_piece][j] = changeable_pieces;
+					Array.prototype.push.apply(pieces_to_switch[i_piece][j], changeable_pieces);
+					// printPiecesToSwitch();
 					break;
 				}
 				else {
@@ -324,8 +326,9 @@ function searchPossibleMovesLookUp( player, opponent, i_piece, j_piece ) {
 				}
 				else if ( board[i][j_piece] == 0 ) {
 					possible_moves[i][j_piece] = 1;
-					pieces_to_switch[i][j_piece] = changeable_pieces;
-					printPiecesToSwitch();
+					// pieces_to_switch[i][j_piece] = changeable_pieces;
+					Array.prototype.push.apply(pieces_to_switch[i][j_piece], changeable_pieces);
+					// printPiecesToSwitch();
 					break;
 				}
 				else {
@@ -357,8 +360,9 @@ function searchPossibleMovesLookDown( player, opponent, i_piece, j_piece ) {
 					}
 					else if (board[i][j_piece] == 0 ) {
 						possible_moves[i][j_piece] = 1;
-						pieces_to_switch[i][j_piece] = changeable_pieces;
-						printPiecesToSwitch();
+						// pieces_to_switch[i][j_piece] = changeable_pieces;
+						Array.prototype.push.apply(pieces_to_switch[i][j_piece], changeable_pieces);
+						// printPiecesToSwitch();
 						// console.log('adicionou');
 						break;
 					}
@@ -397,8 +401,9 @@ function searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece ) 
 					}
 					else if (board[i_piece][j] == 0 ) {
 						possible_moves[i][j] = 1;
-						pieces_to_switch[i][j] = changeable_pieces;
-						printPiecesToSwitch();
+						// pieces_to_switch[i][j] = changeable_pieces;
+						Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
+						// printPiecesToSwitch();
 						break;
 					}
 					else {
@@ -430,8 +435,9 @@ function searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece ) {
 				}
 				else if (board[i_piece][j] == 0 ) {
 					possible_moves[i][j] = 1;
-					pieces_to_switch[i][j] = changeable_pieces;
-					printPiecesToSwitch();
+					// pieces_to_switch[i][j] = changeable_pieces;
+					Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
+					// printPiecesToSwitch();
 					break;
 				}
 				else {
@@ -462,8 +468,9 @@ function searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece ) {
 				}
 				else if (board[i_piece][j] == 0 ) {
 					possible_moves[i][j] = 1;
-					pieces_to_switch[i][j] = changeable_pieces;
-					printPiecesToSwitch();
+					// pieces_to_switch[i][j] = changeable_pieces;
+					Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
+					// printPiecesToSwitch();
 					break;
 				}
 				else {
@@ -494,8 +501,9 @@ function searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece ) {
 					}
 					else if ( board[i][j] == 0 ) {
 						possible_moves[i][j] = 1;
-						pieces_to_switch[i][j] = changeable_pieces;
-						printPiecesToSwitch();
+						// pieces_to_switch[i][j] = changeable_pieces;
+						Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
+						// printPiecesToSwitch();
 						break;
 					}
 					else {
