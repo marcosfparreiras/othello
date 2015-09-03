@@ -41,9 +41,9 @@ var P2_TURN = 2;
 var player_turn = P1_TURN;
 
 // Constantes usadas para controle de retorno da função addPiece( event )
-var IN_BOARD_VALID = 1
-var IN_BOARD_INVALID = 2
-var OUT_BOARD = 3
+var IN_BOARD_VALID = 1;
+var IN_BOARD_INVALID = 2;
+var OUT_BOARD = 3;
 
 // Matriz com possíveis movimentos do jogador da vez. 1 indica que aquele movimento é possível
 var possible_moves;
@@ -147,10 +147,10 @@ function newTurn() {
 	}
 	changeTurn();
 	getPossibleMoves( player_turn );	// Durante esta ação é também preenchida a matriz pieces_to_switch
-	// console.log('---- Matriz board -----');
-	// print_matrix( board, boardSize );
-	// console.log('---- Matriz possible_moves -----');
-	// print_matrix( possible_moves, boardSize );
+	console.log('---- Matriz board -----');
+	print_matrix( board, boardSize );
+	console.log('---- Matriz possible_moves -----');
+	print_matrix( possible_moves, boardSize );
 
 	drawCanvas();
 }
@@ -197,7 +197,7 @@ function getPossibleMoves( player ) {
 
 
 function searchPossibleMoves( player_turn, i_piece, j_piece ) {
-	var player, opponent, i, j;
+	var player, opponent;
 	if( player_turn == P1_TURN ) {
 		player = P1_TURN;
 		opponent = P2_TURN;
@@ -222,6 +222,13 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 	searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece );
 	searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece );
 
+	// aparentemente tudo certo com os movimentos verticais e horizontais
+	// left-down parece estar ok
+	// right-down parece estar ok
+	// left-up parece estar ok
+	// left-down parece estar ok
+
+
 
 	
 	console.log('--------------------------------');
@@ -244,32 +251,41 @@ function searchPossibleMovesLookRight( player, opponent, i_piece, j_piece ) {
 		// console.log('got: ' + board[i_piece][j_piece+1]);
 		// console.log('player_turn: ' + player);
 		// console.log('opponent: ' + opponent);
-		if( board[i_piece][j_piece+1] == opponent ) {
-			changeable_pieces.push( { i: i_piece, j: j_piece+1} );
-			console.log('Entrou DEEP look-rigt');
-			// console.log('encontrou oponente à esquerda');
-			for( j=j_piece+2; j<boardSize; j++ ) {
-				// console.log('no for');
-				if( board[i_piece][j] == opponent ) {
-					// console.log('opponent');
-					changeable_pieces.push( {i: i_piece, j: j} );
-					continue;
-				}
-				else if( board[i_piece][j] == player ) {
-					// console.log('player');
-					break;
-				}
-				else if (board[i_piece][j] == 0 ) {
-					possible_moves[i_piece][j] = 1;
-					// if( pieces_to_switch[i_piece][j] )
-					// pieces_to_switch[i_piece][j] = changeable_pieces;
-					Array.prototype.push.apply(pieces_to_switch[i_piece][j], changeable_pieces);
-					// printPiecesToSwitch();
-					// console.log('adicionou');
-					break;
-				}
-				else {
-					// alert('Erro inesperado no searchPossibleMoves');
+		if (typeof board[i_piece] != 'undefined') {
+			if (typeof board[i_piece][j_piece+1] != 'undefined') {
+				if( board[i_piece][j_piece+1] == opponent ) {
+					changeable_pieces.push( { i: i_piece, j: j_piece+1} );
+					console.log('Entrou DEEP look-rigt');
+					// console.log('encontrou oponente à esquerda');
+					for( j=j_piece+2; j<boardSize; j++ ) {
+						// console.log('no for');
+						if (typeof board[i_piece][j] == 'undefined') {
+							break;
+						}
+						if( board[i_piece][j] == opponent ) {
+							// console.log('opponent');
+							changeable_pieces.push( {i: i_piece, j: j} );
+							continue;
+						}
+						else if( board[i_piece][j] == player ) {
+							// console.log('player');
+							break;
+						}
+						else if (board[i_piece][j] == 0 ) {
+							possible_moves[i_piece][j] = 1;
+							// if( pieces_to_switch[i_piece][j] )
+							// pieces_to_switch[i_piece][j] = changeable_pieces;
+							if( changeable_pieces.length > 0 ) {
+								Array.prototype.push.apply(pieces_to_switch[i_piece][j], changeable_pieces);
+							}
+							// printPiecesToSwitch();
+							// console.log('adicionou');
+							break;
+						}
+						else {
+							// alert('Erro inesperado no searchPossibleMoves');
+						}
+					}
 				}
 			}
 		}
@@ -281,26 +297,35 @@ function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece ) {
 	var changeable_pieces = new Array();
 	if( j_piece >= 1 ) {
 		// console.log('Entrou look-left');
-		if( board[i_piece][j_piece-1] == opponent ) {
-			changeable_pieces.push( { i: i_piece, j: j_piece-1} );
-			// console.log('Entrou DEEP look-left');
-			for( j=j_piece-2; j>=0; j--) {
-				if( board[i_piece][j] == opponent ) {
-					changeable_pieces.push( {i: i_piece, j: j} );
-					continue;
-				}
-				else if( board[i_piece][j] == player ) {
-					break;
-				}
-				else if (board[i_piece][j] == 0 ) {
-					possible_moves[i_piece][j] = 1;
-					// pieces_to_switch[i_piece][j] = changeable_pieces;
-					Array.prototype.push.apply(pieces_to_switch[i_piece][j], changeable_pieces);
-					// printPiecesToSwitch();
-					break;
-				}
-				else {
-					// alert('Erro inesperado no searchPossibleMoves');
+		if (typeof board[i_piece] != 'undefined') {
+			if (typeof board[i_piece][j_piece-1] != 'undefined') {
+				if( board[i_piece][j_piece-1] == opponent ) {
+					changeable_pieces.push( { i: i_piece, j: j_piece-1} );
+					// console.log('Entrou DEEP look-left');
+					for( j=j_piece-2; j>=0; j--) {
+						if (typeof board[i_piece][j] == 'undefined') {
+							break;
+						}
+						if( board[i_piece][j] == opponent ) {
+							changeable_pieces.push( {i: i_piece, j: j} );
+							continue;
+						}
+						else if( board[i_piece][j] == player ) {
+							break;
+						}
+						else if (board[i_piece][j] == 0 ) {
+							possible_moves[i_piece][j] = 1;
+							// pieces_to_switch[i_piece][j] = changeable_pieces;
+							if( changeable_pieces.length > 0 ) {
+								Array.prototype.push.apply(pieces_to_switch[i_piece][j], changeable_pieces);
+							}
+							// printPiecesToSwitch();
+							break;
+						}
+						else {
+							// alert('Erro inesperado no searchPossibleMoves');
+						}
+					}
 				}
 			}
 		}
@@ -313,26 +338,35 @@ function searchPossibleMovesLookUp( player, opponent, i_piece, j_piece ) {
 	var changeable_pieces = new Array();
 	if( i_piece >= 1 ) {
 		// console.log('Entrou look-up');
-		if( board[i_piece-1][j_piece] == opponent ) {
-			changeable_pieces.push( { i: i_piece-1, j: j_piece} );
-			// console.log('Entrou DEEP look-up');
-			for( i=i_piece-2; i>=0; i--) {
-				if( board[i][j_piece] == opponent ) {
-					changeable_pieces.push( {i: i, j: j_piece} );
-					continue;
-				}
-				else if( board[i][j_piece] == player ) {
-					break;
-				}
-				else if ( board[i][j_piece] == 0 ) {
-					possible_moves[i][j_piece] = 1;
-					// pieces_to_switch[i][j_piece] = changeable_pieces;
-					Array.prototype.push.apply(pieces_to_switch[i][j_piece], changeable_pieces);
-					// printPiecesToSwitch();
-					break;
-				}
-				else {
-					// alert('Erro inesperado no searchPossibleMoves');
+		if (typeof board[i_piece-1] != 'undefined') {
+			if (typeof board[i_piece-1][j_piece] != 'undefined') {
+				if( board[i_piece-1][j_piece] == opponent ) {
+					changeable_pieces.push( { i: i_piece-1, j: j_piece} );
+					// console.log('Entrou DEEP look-up');
+					for( i=i_piece-2; i>=0; i--) {
+						if (typeof board[i][j_piece] == 'undefined') {
+							break;
+						}
+						if( board[i][j_piece] == opponent ) {
+							changeable_pieces.push( {i: i, j: j_piece} );
+							continue;
+						}
+						else if( board[i][j_piece] == player ) {
+							break;
+						}
+						else if ( board[i][j_piece] == 0 ) {
+							possible_moves[i][j_piece] = 1;
+							// pieces_to_switch[i][j_piece] = changeable_pieces;
+							if( changeable_pieces.length > 0 ) {
+								Array.prototype.push.apply(pieces_to_switch[i][j_piece], changeable_pieces);
+							}
+							// printPiecesToSwitch();
+							break;
+						}
+						else {
+							// alert('Erro inesperado no searchPossibleMoves');
+						}
+					}
 				}
 			}
 		}
@@ -344,30 +378,37 @@ function searchPossibleMovesLookDown( player, opponent, i_piece, j_piece ) {
 	var changeable_pieces = new Array();
 	// print_matrix(board, boardSize);
 	if( i_piece <= boardSize-1 ) {
-		if (typeof board[i_piece+1] !== 'undefined') {	// verifica se array na posição board[i_piece + 1] está definido. Se não estiver, não prossegue
-			if( board[i_piece+1][j_piece] == opponent ) {
-				changeable_pieces.push( { i: i_piece+1, j: j_piece} );
-				for( i=i_piece+2; i<boardSize; i++ ) {
-					// console.log('no for');
-					if( board[i][j_piece] == opponent ) {
-						// console.log('opponent');
-						changeable_pieces.push( {i: i, j: j_piece} );
-						continue;
-					}
-					else if( board[i][j_piece] == player ) {
-						// console.log('player');
-						break;
-					}
-					else if (board[i][j_piece] == 0 ) {
-						possible_moves[i][j_piece] = 1;
-						// pieces_to_switch[i][j_piece] = changeable_pieces;
-						Array.prototype.push.apply(pieces_to_switch[i][j_piece], changeable_pieces);
-						// printPiecesToSwitch();
-						// console.log('adicionou');
-						break;
-					}
-					else {
-						// alert('Erro inesperado no searchPossibleMoves');
+		if (typeof board[i_piece+1] != 'undefined' ) {
+			if( typeof board[i_piece+1][j_piece] != 'undefined') {	// verifica se array na posição board[i_piece + 1] está definido. Se não estiver, não prossegue
+				if( board[i_piece+1][j_piece] == opponent ) {
+					changeable_pieces.push( { i: i_piece+1, j: j_piece} );
+					for( i=i_piece+2; i<boardSize; i++ ) {
+						if (typeof board[i][j_piece] == 'undefined') {
+							break;
+						}
+						// console.log('no for');
+						if( board[i][j_piece] == opponent ) {
+							// console.log('opponent');
+							changeable_pieces.push( {i: i, j: j_piece} );
+							continue;
+						}
+						else if( board[i][j_piece] == player ) {
+							// console.log('player');
+							break;
+						}
+						else if (board[i][j_piece] == 0 ) {
+							possible_moves[i][j_piece] = 1;
+							// pieces_to_switch[i][j_piece] = changeable_pieces;
+							if( changeable_pieces.length > 0 ) {
+								Array.prototype.push.apply(pieces_to_switch[i][j_piece], changeable_pieces);
+							}
+							// printPiecesToSwitch();
+							// console.log('adicionou');
+							break;
+						}
+						else {
+							// alert('Erro inesperado no searchPossibleMoves');
+						}
 					}
 				}
 			}
@@ -381,33 +422,41 @@ function searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece ) 
 	var i, j;
 	var changeable_pieces = new Array();
 	// console.log('Pre look-rigt-down');
-	if( j_piece <= boardSize-2 && i_piece <= boardSize-2 ) {
-		if (typeof board[i_piece+1] !== 'undefined') {
-			// console.log('Entrou look-rigt-down');
-			if( board[i_piece+1][j_piece+1] == opponent ) {
-				changeable_pieces.push( { i: i_piece+1, j: j_piece+1} );
-				// console.log('Entrou DEEP look-rigt-down');
-				for( i=i_piece+2, j=j_piece+2; i<boardSize && j<boardSize; i++, j++ ) {
-					// if( i>= boardSize || j>=boardSize ) {
-					// 	break;
-					// }
+	if( j_piece <= boardSize-1 && i_piece <= boardSize-1 ) {
+		if (typeof board[i_piece+1] != 'undefined') {
+			if (typeof board[i_piece+1][j_piece+1] != 'undefined') {
+				// console.log('Entrou look-rigt-down');
+				if( board[i_piece+1][j_piece+1] == opponent ) {
+					changeable_pieces.push( { i: i_piece+1, j: j_piece+1} );
+					// console.log('Entrou DEEP look-rigt-down');
+					for( i=i_piece+2, j=j_piece+2; i<boardSize && j<boardSize; i++, j++ ) {
+						if (typeof board[i][j] == 'undefined') {
+							break;
+						}
+						// if( i>= boardSize || j>=boardSize ) {
+						// 	break;
+						// }
 
-					if( board[i][j] == opponent ) {
-						changeable_pieces.push( {i: i, j: j} );
-						continue;
-					}
-					else if( board[i][j] == player ) {
-						break;
-					}
-					else if (board[i_piece][j] == 0 ) {
-						possible_moves[i][j] = 1;
-						// pieces_to_switch[i][j] = changeable_pieces;
-						Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
-						// printPiecesToSwitch();
-						break;
-					}
-					else {
-						// alert('Erro inesperado no searchPossibleMoves');
+						if( board[i][j] == opponent ) {
+							changeable_pieces.push( {i: i, j: j} );
+							continue;
+						}
+						else if( board[i][j] == player ) {
+							break;
+						}
+						else if (board[i][j] == 0 ) {
+							possible_moves[i][j] = 1;
+							// pieces_to_switch[i][j] = changeable_pieces;
+							if( changeable_pieces.length > 0 ) {
+								Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
+							}
+							// printPiecesToSwitch();
+							break;
+						}
+						else {
+							console.log('Erro inesperado - look right-down');
+							alert('Erro inesperado no searchPossibleMoves');
+						}
 					}
 				}
 			}
@@ -422,26 +471,37 @@ function searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece ) {
 	// console.log('Pre look-left-up');
 	if( j_piece >= 1 && i_piece >= 1 ) {
 		// console.log('Entrou look-left-up');
-		if( board[i_piece-1][j_piece-1] == opponent ) {
-			changeable_pieces.push( { i: i_piece-1, j: j_piece-1} );
-			// console.log('Entrou DEEP look-left-up');
-			for( i=i_piece-2, j=j_piece-2; i>=0 && j>=0 ; i--, j--) {
-				if( board[i][j] == opponent ) {
-					changeable_pieces.push( {i: i, j: j} );
-					continue;
-				}
-				else if( board[i][j] == player ) {
-					break;
-				}
-				else if (board[i_piece][j] == 0 ) {
-					possible_moves[i][j] = 1;
-					// pieces_to_switch[i][j] = changeable_pieces;
-					Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
-					// printPiecesToSwitch();
-					break;
-				}
-				else {
-					// alert('Erro inesperado no searchPossibleMoves');
+		if (typeof board[i_piece-1] != 'undefined') {
+			if (typeof board[i_piece-1][j_piece-1] != 'undefined') {
+				if( board[i_piece-1][j_piece-1] == opponent ) {
+					changeable_pieces.push( { i: i_piece-1, j: j_piece-1} );
+					// console.log('Entrou DEEP look-left-up');
+					for( i=i_piece-2, j=j_piece-2; i>=0 && j>=0 ; i--, j--) {
+						if (typeof board[i][j] == 'undefined') {
+							break;
+						}
+						if( board[i][j] == opponent ) {
+							changeable_pieces.push( {i: i, j: j} );
+							continue;
+						}
+						else if( board[i][j] == player ) {
+							break;
+						}
+						else if (board[i][j] == 0 ) {
+							possible_moves[i][j] = 1;
+							// pieces_to_switch[i][j] = changeable_pieces;
+							if( changeable_pieces.length > 0 ) {
+								Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
+							}
+							// printPiecesToSwitch();
+							break;
+						}
+						else {
+							console.log('Erro inesperado - look left-up');
+							alert('Erro inesperado no searchPossibleMoves');
+							// alert('Erro inesperado no searchPossibleMoves');
+						}
+					}
 				}
 			}
 		}
@@ -455,26 +515,37 @@ function searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece ) {
 	// console.log('Pre look-rigtup');
 	if( j_piece <= boardSize-2 && i_piece >= 1 ) {
 		// console.log('Entrou look-rigt-up');
-		if( board[i_piece-1][j_piece+1] == opponent ) {
-			changeable_pieces.push( { i: i_piece-1, j: j_piece+1} );
-			// console.log('Entrou DEEP look-rigt-up');
-			for( i=i_piece-2, j=j_piece+2; i>=0 && j<boardSize; i--, j++ ) {
-				if( board[i][j] == opponent ) {
-					changeable_pieces.push( {i: i, j: j} );
-					continue;
-				}
-				else if( board[i][j] == player ) {
-					break;
-				}
-				else if (board[i_piece][j] == 0 ) {
-					possible_moves[i][j] = 1;
-					// pieces_to_switch[i][j] = changeable_pieces;
-					Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
-					// printPiecesToSwitch();
-					break;
-				}
-				else {
-					// alert('Erro inesperado no searchPossibleMoves');
+		if (typeof board[i_piece-1] != 'undefined') {
+			if (typeof board[i_piece-1][j_piece+1] != 'undefined') {
+				if( board[i_piece-1][j_piece+1] == opponent ) {
+					changeable_pieces.push( { i: i_piece-1, j: j_piece+1} );
+					// console.log('Entrou DEEP look-rigt-up');
+					for( i=i_piece-2, j=j_piece+2; i>=0 && j<boardSize; i--, j++ ) {
+						if (typeof board[i][j] == 'undefined') {
+							break;
+						}
+						if( board[i][j] == opponent ) {
+							changeable_pieces.push( {i: i, j: j} );
+							continue;
+						}
+						else if( board[i][j] == player ) {
+							break;
+						}
+						else if (board[i][j] == 0 ) {
+							possible_moves[i][j] = 1;
+							// pieces_to_switch[i][j] = changeable_pieces;
+							if( changeable_pieces.length > 0 ) {
+								Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
+							}
+							// printPiecesToSwitch();
+							break;
+						}
+						else {
+							console.log('Erro inesperado - look right-up');
+							alert('Erro inesperado no searchPossibleMoves');
+							// alert('Erro inesperado no searchPossibleMoves');
+						}
+					}
 				}
 			}
 		}
@@ -487,32 +558,40 @@ function searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece ) {
 	// // look left-down
 	// console.log('Pre left-down');
 	if( j_piece >= 1 && i_piece <= boardSize ) {
-		if (typeof board[i_piece+1] !== 'undefined') {
-			if( board[i_piece+1][j_piece-1] == opponent ) {
-				changeable_pieces.push( { i: i_piece+1, j: j_piece-1} );
-				// console.log('Entrou DEEP left-down');
-				for( i=i_piece+2, j=j_piece-2; i<boardSize && j>=0; i++, j--) {
-					if( board[i][j] == opponent ) {
-						changeable_pieces.push( {i: i, j: j} );
-						continue;
-					}
-					else if( board[i][j] == player ) {
-						break;
-					}
-					else if ( board[i][j] == 0 ) {
-						possible_moves[i][j] = 1;
-						// pieces_to_switch[i][j] = changeable_pieces;
-						Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
-						// printPiecesToSwitch();
-						break;
-					}
-					else {
-						// alert('Erro inesperado no searchPossibleMoves');
+		if (typeof board[i_piece+1] != 'undefined') {
+			if (typeof board[i_piece+1][j_piece-1] != 'undefined') {
+				if( board[i_piece+1][j_piece-1] == opponent ) {
+					changeable_pieces.push( { i: i_piece+1, j: j_piece-1} );
+					// console.log('Entrou DEEP left-down');
+					for( i=i_piece+2, j=j_piece-2; i<boardSize && j>=0; i++, j--) {
+						if (typeof board[i][j] == 'undefined') {
+							break;
+						}
+						if( board[i][j] == opponent ) {
+							changeable_pieces.push( {i: i, j: j} );
+							continue;
+						}
+						else if( board[i][j] == player ) {
+							break;
+						}
+						else if ( board[i][j] == 0 ) {
+							possible_moves[i][j] = 1;
+							// pieces_to_switch[i][j] = changeable_pieces;
+							if( changeable_pieces.length > 0 ) {
+								Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
+							}
+							// printPiecesToSwitch();
+							break;
+						}
+						else {
+							console.log('Erro inesperado - look left-down');
+							alert('Erro inesperado no searchPossibleMoves');
+							// alert('Erro inesperado no searchPossibleMoves');
+						}
 					}
 				}
 			}
 		}
-
 	}
 }
 
@@ -826,10 +905,11 @@ function printPiecesToSwitch() {
 	for( var i = 0; i<boardSize; i++ ) {
 		for( var j = 0; j<boardSize; j++ ) {
 			if( pieces_to_switch[i][j].length > 0 ) {
-				console.log('posição: ' + i + ', ' + j )
+				console.log('posição: ' + i + ', ' + j );
 				for( var k = 0; k<pieces_to_switch[i][j].length; k++) {
 					piece = pieces_to_switch[i][j][k];
-					console.log('  i: ' + i + ', j: ' + j);
+					// console.log('  i: ' + i + ', j: ' + j);
+					console.log('  i: ' + piece.i + ', j: ' + piece.j);
 				}
 			}
 		}
