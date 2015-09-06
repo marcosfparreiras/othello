@@ -3,6 +3,16 @@
 
 // ---------------- Definição das variáveis globais ----------
 
+// Define variáveis usadas para o controle de fluxo de telas
+var SCREEN_START_MENU = 1; 		// indica tela do menu inicial
+var SCREEN_GAME = 2;			// indica tela do jogo em si
+var SCREEN_INSTRUCTIONS = 3;	// incida tela de instruções
+var SCREEN_OPTIONS = 4;			// indica tela de opções/configurações
+
+var game_screen = SCREEN_START_MENU;	// Define tela inicial como sendo o menu Inicializa
+var game_screen = SCREEN_GAME;	// Define tela inicial como sendo o menu Inicializa
+
+
 // Define tamanho de cada um dos 64 quadrados (8x8) do tabuleiro
 var space_size = 60;
 // Define raio das peças que serão poscionadas sobre o tabuleiro
@@ -36,9 +46,15 @@ var P1_COLOR = "rgb(255,222,173)";		// peças do player 1 recebem cor creme
 var P2_COLOR = "rgb(0,0,0)";			// peças do player 2 recebem cor preta
 
 // Define qual jogador está jogando
-var P1_TURN = 1;
-var P2_TURN = 2;
-var player_turn = P1_TURN;
+var P1_TURN = 1;	// define turno do player 1
+var P2_TURN = 2;	// define turno do player 2
+var player_turn = P1_TURN;	// varíavel guarda de quem é o turno
+
+// Define a função do jogo (player vs player, player vs máquina)
+var GAME_PVP = 1; 	// define jogo player vs player
+var GAME_PVM = 2;	// define jogo player vs machine
+var game_mode = GAME_PVM;	// variável guarda o modo de jogo
+// var game_mode = GAME_PVP;	// variável guarda o modo de jogo
 
 // Constantes usadas para controle de retorno da função addPiece( event )
 var IN_BOARD_VALID = 1;
@@ -62,8 +78,46 @@ var j_test = 0;
 
 // Função executada assim que a tela é carregada
 window.onload = function() {
-	gameAction();
+	// gameAction();
+	canvas.addEventListener("mousedown", getMouseClick );
+	manageScreen();
 };
+
+function manageScreen() {
+	if( game_screen == SCREEN_START_MENU ) {
+		drawScreenStartMenu()
+	}
+	else if( game_screen == SCREEN_GAME ) {
+		gameAction();
+	}
+	else if( game_screen == SCREEN_INSTRUCTIONS ) {
+
+	}
+	else if( game_screen == SCREEN_OPTIONS ) {
+
+	}
+}
+
+function drawScreenStartMenu() {
+	console.log('ok');
+	drawScreen();
+
+	// Desenha quadrado com início no ponto (x,y) e de tamanho size. O ponto (x,y) é referente ao canto superior esquerdo do quadrado
+	var c = document.getElementById("canvas");
+	var ctx = c.getContext("2d");
+	var buttom_width = 100;
+	var button_height = 50;
+	var num_buttons = 3;
+
+	ctx.beginPath();
+	ctx.rect(50,50,buttom_width,button_height);
+	ctx.fillStyle = '#DD6666';
+	ctx.fill();
+	ctx.lineWidth = 1;
+	ctx.stroke();
+	ctx.closePath();
+
+}
 
 function gameAction() {
 	pos_clicked = {i: 0, j:0};
@@ -71,7 +125,7 @@ function gameAction() {
 	initializePossibleMoves();
 	initializePiecesToSwitch();
 	getPossibleMoves( player_turn );
-	canvas.addEventListener("mousedown", getMouseClick );
+	// canvas.addEventListener("mousedown", getMouseClick );
 	// printPiecesToSwitch();
 
 	// console.log('---- Matriz board -----');
@@ -147,12 +201,60 @@ function newTurn() {
 	}
 	changeTurn();
 	getPossibleMoves( player_turn );	// Durante esta ação é também preenchida a matriz pieces_to_switch
-	console.log('---- Matriz board -----');
-	print_matrix( board, boardSize );
-	console.log('---- Matriz possible_moves -----');
-	print_matrix( possible_moves, boardSize );
-
 	drawCanvas();
+
+	if( game_mode == GAME_PVM) {
+		if( player_turn == P1_TURN ) {
+			// Espera pelo clique na posição válida
+		}
+		else if( player_turn == P2_TURN ) {
+			// Turno da máquina
+			// alert('newTurn p2 turn');
+			machineTurn();
+			newTurn();
+		}
+	}
+	if( game_mode == GAME_PVP ) {
+		// Espera jogada do jogador
+	}
+	
+}
+
+function playerTurn() {
+
+}
+
+// Função executa turno de jogada da máquina
+function machineTurn() {
+	var move;
+	alert('Turno da máquina');
+	move = getMachineMove();
+	board[move.i][move.j] = player_turn;
+	switchPieces(move.i, move.j, player_turn);
+
+
+	// machine_turn();
+
+}
+
+function getMachineMove() {
+	var move = getRandomMove();
+	// alert('i: ' +move.i + ', j: ' +move.j);
+	return move;
+
+}
+
+function getRandomMove() {
+	for( var i=0; i<boardSize; i++ ) {
+		for( var j=0; j<boardSize; j++ ) {
+			if( possible_moves[i][j] == 1 ) {
+				return {
+					i: i,
+					j: j
+				}
+			}
+		}
+	}
 }
 
 // Troca o turno, passando a vez para o outro jogador
@@ -228,16 +330,9 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 	// left-up parece estar ok
 	// left-down parece estar ok
 
-
-
-	
 	console.log('--------------------------------');
 
-
-
 	// possible_moves[i_piece][j_piece] = 1;
-
-
 }
 
 function searchPossibleMovesLookRight( player, opponent, i_piece, j_piece ) {

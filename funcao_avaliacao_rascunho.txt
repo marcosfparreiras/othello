@@ -1,0 +1,28 @@
+
+
+função de avaliação do reversi
+
+n_p = número de peões do jogador
+n_o = número de peões do oponente
+
+n_pc = número de peões do jogador na quina
+n_oc = número de peões do oponente na quina
+
+
+g1:
+	n_p / n_o (quanto maior, melhor)
+
+g2:
+	n_pc - n_oc (quanto maior, melhor)
+
+
+f1:
+	g1^g2
+
+
+
+
+
+
+
+
