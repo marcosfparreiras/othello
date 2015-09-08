@@ -54,7 +54,7 @@ var player_turn = P1_TURN;	// varíavel guarda de quem é o turno
 var GAME_PVP = 1; 	// define jogo player vs player
 var GAME_PVM = 2;	// define jogo player vs machine
 var game_mode = GAME_PVM;	// variável guarda o modo de jogo
-// var game_mode = GAME_PVP;	// variável guarda o modo de jogo
+var game_mode = GAME_PVP;	// variável guarda o modo de jogo
 
 // Constantes usadas para controle de retorno da função addPiece( event )
 var IN_BOARD_VALID = 1;
@@ -69,6 +69,9 @@ var pieces_to_switch;
 
 // Dicionário com a posição que foi clicada. Ex: pos_clicked = {i: 3, j:2} => pos_clicked.i=3 e pos_clicked.j=2
 var pos_clicked;
+
+// variável conta quantas vezes seguidas o jogo ficou sem jogadas possíveis. Se chegar a dois, o jogo termina, pois nenhum dos jogadores terá jogadas possíveis
+var count_no_moves = 0;
 
 // Variáveis usadas somente para testes
 var i_test = 0;
@@ -154,12 +157,75 @@ function gameAction() {
 	drawCanvas();
 }
 
+// retorna uma ação
+function alphaBetaSearch( state ) {
+
+}
+
+// retorna um valor de utilidade
+// state: the current state in game
+// alpha: the value of the best alternative for MAX along the path to state
+// beta:  the value of the best alternative for MIN along the path to state
+function maxValue( state, alpha, beta ) {
+	var v, sucessors;
+	if( terminalState( state ) ) {
+		return getUtility( state );
+	}
+	v = -999999999;
+	sucessors = getSucessors( state );
+	for (var i = 0; i <= sucessors.length ; i++) {
+		var s = sucessors[i];
+		v = max( v, minValue( s, alpha, beta) );
+		if( v >= beta ) {
+			return v;
+		}
+		alpha = max( alpha, v );
+	}
+}
+
+// retorna um valor de utilidade
+// state: the current state in game
+// alpha: the value of the best alternative for MAX along the path to state
+// beta:  the value of the best alternative for MIN along the path to state
+function minValue( state, alpha, beta ) {
+	var v, sucessors;
+	if( terminalState( state ) ) {
+		return getUtility( state );
+	}
+	v = +999999999;
+	sucessors = getSucessors( state );
+	for (var i = 0; i <= sucessors.length ; i++) {
+		var s = sucessors[i];
+		v = min( v, maxValue( s, alpha, beta) );
+		if( v <= alpha ) {
+			return v;
+		}
+		beta = min( beta, v );
+	}
+}
+
+
+// retorna true se estado for terminal e false caso contrário
+function isTerminalState( state ) {
+
+}
+
+// retorna valor de utilidade do estado
+function getUtility( state ) {
+
+}
+
 function switchPieces(i_clicked, j_clicked, player_turn) {
 	var piece;
 	for(var k=0; k<pieces_to_switch[i_clicked][j_clicked].length; k++) {
 		piece = pieces_to_switch[i_clicked][j_clicked][k];
 		board[piece.i][piece.j] = player_turn ;
 	}
+}
+
+// retorna estados sucessores do estado passado como parâmetro
+function getSucessors( state ) {
+
 }
 
 // Função chamada quando houer um clique dentro do canvas
@@ -193,48 +259,124 @@ function getMouseClick( event ) {
 }
 
 function newTurn() {
+	var score = getScore();
+	
 	// Limpa matriz de peças a serem trocadas
 	for(var i=0; i<boardSize; i++) {
 		for(var j=0; j<boardSize; j++) {
 			pieces_to_switch[i][j] = new Array();
 		}
 	}
+
+	// Muda jogador e exibe nova configuração do tabuleiro, já com os movimentos possíveis
 	changeTurn();
 	getPossibleMoves( player_turn );	// Durante esta ação é também preenchida a matriz pieces_to_switch
 	drawCanvas();
+
+	if( isBoardFull( board ) ) {
+		alert( getEndOfGameMessage() );
+	}
+
+	if( ! hasPossibleMoves( possible_moves ) ) {
+		if( count_no_moves >= 2 ) {
+			// alert("Fim de jogo. Nenhum dos jogadores têm opção de jogada");
+			alert( getEndOfGameMessage() );
+		}
+		else {
+			count_no_moves++;
+			newTurn();
+			
+		}
+	}
+	else {
+		count_no_moves = 0;
+	}
 
 	if( game_mode == GAME_PVM) {
 		if( player_turn == P1_TURN ) {
 			// Espera pelo clique na posição válida
 		}
 		else if( player_turn == P2_TURN ) {
-			// Turno da máquina
-			// alert('newTurn p2 turn');
+
+			// var now = new Date().getTime();
+			// var delay_ms = 1000;
+			// while(1) {
+			// 	if( new Date().getTime() - now > delay_ms ) {
+			// 		break;
+			// 	}
+			// }
+			alert( 'machine turn' );
 			machineTurn();
 			newTurn();
 		}
 	}
 	if( game_mode == GAME_PVP ) {
 		// Espera jogada do jogador
+	}	
+}
+
+function getEndOfGameMessage() {
+	var text_end = "Fim de jogo. ";
+	var score = getScore();
+	// alert("Fim de jogo");
+	if( score.p1 > score.p2 ) {
+		text_end += "Vitória do player 1";
 	}
-	
+	else if( score.p1 < score.p2 ) {
+		text_end += "Vitória do player 2";
+	}
+	else {
+		text_end += "O jogo terminou empatado";
+	}
+	return text_end;
+}
+
+function hasPossibleMoves( possible_moves ) {
+	for (var i = 0; i < boardSize; i++ ) {
+		for (var j = 0; j < boardSize; j++ ) {
+			if( possible_moves[i][j] == 1 ) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+function isBoardFull( board ) {
+	for (var i = 0; i < boardSize; i++ ) {
+		for (var j = 0; j < boardSize; j++ ) {
+			if( board[i][j] != 0 ) {
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 function playerTurn() {
 
 }
 
+function delay( delay_ms ) {
+	var ref = new Date().getTime();
+	var now;
+	while(1) {
+		now = new Date().getTime();
+		if( ( now - ref ) >= delay_ms ) {
+			break;
+		}
+	}
+}
+
+
 // Função executa turno de jogada da máquina
 function machineTurn() {
 	var move;
-	alert('Turno da máquina');
+	// alert('Turno da máquina');
+
 	move = getMachineMove();
 	board[move.i][move.j] = player_turn;
 	switchPieces(move.i, move.j, player_turn);
-
-
-	// machine_turn();
-
 }
 
 function getMachineMove() {
