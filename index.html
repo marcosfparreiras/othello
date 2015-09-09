@@ -24,14 +24,32 @@
 			<source src="audio/backgroud_sound.mp3" />
 			<p>Seu navegador não suporta o elemento audio </p>
 		</audio>
-		<div>
-		  <button onclick="document.getElementById('backgroud_sound').play()">Reproduzir o áudio</button>
-		  <button onclick="document.getElementById('backgroud_sound').pause()">Pausar o áudio</button>
-		  <button onclick="document.getElementById('backgroud_sound').volume+=0.1">Aumentar o volume</button>
-		  <button onclick="document.getElementById('backgroud_sound').volume-=0.1">Diminuir o volume</button>
-		</div>
 
 		<canvas id="canvas" ></canvas>
+
+		<div id="sound_config">
+			<div class="option-title">Ajustes de Som</div>
+			<hr>
+			<div id="music_control">
+				<span>Música:</span>
+				<span>
+					<button class="btn" onclick="document.getElementById('backgroud_sound').play()">Reproduzir</button>
+				</span>
+				<span>
+					<button class="btn" onclick="document.getElementById('backgroud_sound').pause()">Pausar</button>
+				</span>
+			</div>
+			<hr>
+			<div id="volume_control">
+				<span>Volume:</span>
+				<span>
+					<button class="btn" onclick="document.getElementById('backgroud_sound').volume+=0.1">Aumentar</button>
+				</span>
+				<span>
+					<button class="btn" onclick="document.getElementById('backgroud_sound').volume-=0.1">Diminuir</button>
+				</span>
+			</div>
+		</div>
 
 	</body>
 </html>

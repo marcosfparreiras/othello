@@ -255,18 +255,18 @@ function getMouseClick( event ) {
 		switchPieces(pos_clicked.i, pos_clicked.j, player_turn);
 		// printPiecesToSwitch();
 		// alert(pos_clicked.i + ', ' + pos_clicked.j);
-		// document.getElementById('add_piece_ok').play();	
+		// document.getElementById('add_piece_ok').play();
 		newTurn();
 	}
 	else if( addPiece( event ) == IN_BOARD_INVALID ) {
 		add_piece_error_sound.play();
-		// document.getElementById('add_piece_error').play();	
+		// document.getElementById('add_piece_error').play();
 	}
 }
 
 function newTurn() {
 	var score = getScore();
-	
+
 	// Limpa matriz de peças a serem trocadas
 	for(var i=0; i<boardSize; i++) {
 		for(var j=0; j<boardSize; j++) {
@@ -291,7 +291,7 @@ function newTurn() {
 		else {
 			count_no_moves++;
 			newTurn();
-			
+
 		}
 	}
 	else {
@@ -318,7 +318,7 @@ function newTurn() {
 	}
 	if( game_mode == GAME_PVP ) {
 		// Espera jogada do jogador
-	}	
+	}
 }
 
 function getEndOfGameMessage() {
@@ -460,7 +460,7 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 	console.log('--------------------------------');
 	console.log('Peça - i: ' + i_piece + ', j: ' + j_piece );
 
-	// Movimentos horizontais e verticais 
+	// Movimentos horizontais e verticais
 
 	searchPossibleMovesLookRight( player, opponent, i_piece, j_piece );
 	searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece );
@@ -533,7 +533,7 @@ function searchPossibleMovesLookRight( player, opponent, i_piece, j_piece ) {
 			}
 		}
 	}
-} 
+}
 
 function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece ) {
 	var j;
@@ -657,7 +657,7 @@ function searchPossibleMovesLookDown( player, opponent, i_piece, j_piece ) {
 			}
 		}
 	}
-} 
+}
 
 // Movimentos Diagonais
 function searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece ) {
@@ -853,7 +853,7 @@ function addPiece( event ) {
 	var x = mousePos.x;
 	var y = mousePos.y;
 	//var h_space = parseInt( ( x - x_offset ) / space_size );
-	//var v_space = parseInt( ( y - y_offset ) / space_size ); 
+	//var v_space = parseInt( ( y - y_offset ) / space_size );
 	var i, j;
 
 	if( x >= x_offset && x <= ( boardWidth + x_offset) && y >= y_offset && y <= ( boardHeight + y_offset) ) {
@@ -865,7 +865,7 @@ function addPiece( event ) {
 		if( board[i][j] != 0 ) {
 			ret = IN_BOARD_INVALID;
 		}
-		else {	
+		else {
 			if( possible_moves[i][j] ) {	// Se casa está vazia e movimento é válido
 				board[i][j] = player_turn;
 				pos_clicked = {i: i, j:j};
@@ -915,7 +915,7 @@ function initializePossibleMoves() {
 
 // Inicializa tabuleiro com todas as casas vazias - board[a][b] diz respeito à linha a e coluna b
 function initializeBoard() {
-	board = new Array(boardSize);			
+	board = new Array(boardSize);
 	for (var i = 0; i < boardSize; i++) {
 		board[i] = new Array(boardSize);
 	}
@@ -1099,6 +1099,9 @@ function drawEmptySquare( x, y, size ) {	// Desenha novo quadrado com início no
 	ctx.lineWidth = 1;
 	ctx.stroke();
 	ctx.closePath();
+	// verde: 0A5300
+	// azul: 3F38F7
+	// amarelo: FFFF00
 }
 
 function drawFilledSquare( x, y, size ) {	// Desenha novo quadrado com início no onto (x,y)
@@ -1113,6 +1116,9 @@ function drawFilledSquare( x, y, size ) {	// Desenha novo quadrado com início n
 	ctx.lineWidth = 1;
 	ctx.stroke();
 	ctx.closePath();
+	// verde: 1EB219
+	// azul: 040691
+	// amarelo: D9B814
 }
 
 // Desenha círculo (peça) com início no ponto (x,y), de raio radius e de cor color
@@ -1247,7 +1253,7 @@ function startGame() {
 	// 		}
 	// 	}
 	// }
-	
+
 	// // // look down
 	// console.log('Pre look-down');
 	// if( i_piece <= boardSize ) {

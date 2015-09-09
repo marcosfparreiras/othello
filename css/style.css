@@ -1,25 +1,40 @@
 body {
-    background: #ffffff;  
-    text-align: center; 
-    padding: 20px; 
-    color: #575757; 
-    font: 14px/21px Arial,Helvetica,sans-serif;
-}
- 
-a {
-    color: #B93F14;
-}
- 
-a:hover {
-    text-decoration: none;
-}
- 
-ol {
-    width: 600px; 
-    text-align: left; 
-    margin: 15px auto
+  background: #ffffff;
+  text-align: center;
+  padding: 20px;
+  color: #575757;
+  font: 14px/21px Arial,Helvetica,sans-serif;
 }
 
-canvas {
-    border: 1px solid black;
+a { color: #B93F14; }
+
+a:hover { text-decoration: none; }
+
+ol {
+  width: 600px;
+  text-align: left;
+  margin: 15px auto
 }
+
+canvas { border: 1px solid black; }
+
+#sound_config{
+  border: 1px solid black;
+  width: 30%;
+  background-color: #eaeaea;
+  padding: 10px 5px;
+  margin: 0 auto;
+}
+
+#sound_config .option-title {
+  font-size: 150%;
+  color: black;
+  margin-bottom: 10px;
+}
+
+#sound_config .btn{ width: 8rem; margin: 0 2%; }
+
+#sound_config #music_control{ text-align: left; }
+#sound_config #volume_control{ text-align: left; }
+#sound_config #music_control span:first-of-type{ width: 25%; display: inline-block; }
+#sound_config #volume_control span:first-of-type{ width: 25%; display: inline-block; }
