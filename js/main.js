@@ -53,7 +53,7 @@ var player_turn = P1_TURN;	// varíavel guarda de quem é o turno
 // Define a função do jogo (player vs player, player vs máquina)
 var GAME_PVP = 1; 	// define jogo player vs player
 var GAME_PVM = 2;	// define jogo player vs machine
-var game_mode = GAME_PVM;	// variável guarda o modo de jogo
+// var game_mode = GAME_PVM;	// variável guarda o modo de jogo
 var game_mode = GAME_PVP;	// variável guarda o modo de jogo
 
 // Constantes usadas para controle de retorno da função addPiece( event )
@@ -72,6 +72,19 @@ var pos_clicked;
 
 // variável conta quantas vezes seguidas o jogo ficou sem jogadas possíveis. Se chegar a dois, o jogo termina, pois nenhum dos jogadores terá jogadas possíveis
 var count_no_moves = 0;
+
+
+// Atributos usados nos estados para o mini-max + poda alpha-beta 
+// board - indica o estado do tabuleiro no momento
+// depth - indica a profundidade do estado na árvore
+// utility - indica a utilidade do nó (já considerando todos os nós filhos visitados)
+// successors - array com os nós sucessores
+// 
+// Exemplo:
+// 		state.board
+// 		state.depth
+// 		state.utility
+// 		state.successors
 
 // Variáveis usadas somente para testes
 var i_test = 0;
@@ -158,7 +171,12 @@ function gameAction() {
 }
 
 // retorna uma ação
+// retornará o estado do tabuleiro obtido com a jogada escolhida
+// state: the current state in game
 function alphaBetaSearch( state ) {
+	var v = maxValue( state, -999999, +999999 );
+
+	// return the action in Successors(state) with value v
 
 }
 
@@ -168,7 +186,7 @@ function alphaBetaSearch( state ) {
 // beta:  the value of the best alternative for MIN along the path to state
 function maxValue( state, alpha, beta ) {
 	var v, sucessors;
-	if( terminalState( state ) ) {
+	if( isTerminalState( state ) ) {
 		return getUtility( state );
 	}
 	v = -999999999;
@@ -189,7 +207,7 @@ function maxValue( state, alpha, beta ) {
 // beta:  the value of the best alternative for MIN along the path to state
 function minValue( state, alpha, beta ) {
 	var v, sucessors;
-	if( terminalState( state ) ) {
+	if( isTerminalState( state ) ) {
 		return getUtility( state );
 	}
 	v = +999999999;
@@ -205,9 +223,23 @@ function minValue( state, alpha, beta ) {
 }
 
 
+//  PRECISA ALTERAR
 // retorna true se estado for terminal e false caso contrário
 function isTerminalState( state ) {
-
+	if( isBoardFull( board ) ) {
+		return true;
+	}
+	if( ! hasPossibleMoves( possible_moves ) ) {
+		if( count_no_moves >= 2 ) {
+			// alert("Fim de jogo. Nenhum dos jogadores têm opção de jogada");
+			// alert( getEndOfGameMessage() );
+			return true
+		}
+		else {
+			count_no_moves = 0;
+			
+		}
+	}
 }
 
 // retorna valor de utilidade do estado
