@@ -247,6 +247,11 @@ function getUtility( state ) {
 
 }
 
+// retorna estados sucessores do estado passado como parâmetro
+function getSucessors( state ) {
+
+}
+
 function switchPieces(i_clicked, j_clicked, player_turn) {
 	var piece;
 	for(var k=0; k<pieces_to_switch[i_clicked][j_clicked].length; k++) {
@@ -255,10 +260,7 @@ function switchPieces(i_clicked, j_clicked, player_turn) {
 	}
 }
 
-// retorna estados sucessores do estado passado como parâmetro
-function getSucessors( state ) {
 
-}
 
 // Função chamada quando houer um clique dentro do canvas
 //	 	Constantes usadas:
