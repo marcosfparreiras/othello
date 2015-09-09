@@ -20,10 +20,10 @@ canvas { border: 1px solid black; }
 
 #sound_config{
   border: 1px solid black;
-  width: 30%;
+  width: 25rem;
   background-color: #eaeaea;
   padding: 10px 5px;
-  margin: 0 auto;
+  margin: 10px auto 0;
 }
 
 #sound_config .option-title {
@@ -43,13 +43,14 @@ canvas { border: 1px solid black; }
   box-shadow: 2px 2px 4px black;
 }
 
+
+
 #sound_config .btn.reproduzir, .btn.aumentar{ background-color: #111EFF; }
 #sound_config .btn.reproduzir:hover, .btn.aumentar:hover{ background-color: #040EB9; }
 
 #sound_config .btn.pausar, .btn.diminuir{ background-color: #C10303; }
 #sound_config .btn.pausar:hover, .btn.diminuir:hover{ background-color: #790101; }
 
-#sound_config #music_control{ text-align: left; }
-#sound_config #volume_control{ text-align: left; }
+#music_control, #volume_control{ text-align: left; color: #1C1C1C; }
 #sound_config #music_control span:first-of-type{ width: 25%; display: inline-block; }
 #sound_config #volume_control span:first-of-type{ width: 25%; display: inline-block; }
