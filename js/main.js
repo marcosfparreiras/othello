@@ -54,7 +54,7 @@ var player_turn = P1_TURN;	// varíavel guarda de quem é o turno
 var GAME_PVP = 1; 	// define jogo player vs player
 var GAME_PVM = 2;	// define jogo player vs machine
 var game_mode = GAME_PVM;	// variável guarda o modo de jogo
-var game_mode = GAME_PVP;	// variável guarda o modo de jogo
+// var game_mode = GAME_PVP;	// variável guarda o modo de jogo
 
 // Constantes usadas para controle de retorno da função addPiece( event )
 var IN_BOARD_VALID = 1;
@@ -76,6 +76,12 @@ var count_no_moves = 0;
 // Variáveis usadas somente para testes
 var i_test = 0;
 var j_test = 0;
+
+// estados terão
+// 		board
+// 		depth
+// 		successors
+// 		utility
 
 // --------------Fim da definição das variáveis globais ----------
 
@@ -168,7 +174,7 @@ function alphaBetaSearch( state ) {
 // beta:  the value of the best alternative for MIN along the path to state
 function maxValue( state, alpha, beta ) {
 	var v, sucessors;
-	if( terminalState( state ) ) {
+	if( isTerminalState( state ) ) {
 		return getUtility( state );
 	}
 	v = -999999999;
@@ -189,7 +195,7 @@ function maxValue( state, alpha, beta ) {
 // beta:  the value of the best alternative for MIN along the path to state
 function minValue( state, alpha, beta ) {
 	var v, sucessors;
-	if( terminalState( state ) ) {
+	if( isTerminalState( state ) ) {
 		return getUtility( state );
 	}
 	v = +999999999;
@@ -215,17 +221,17 @@ function getUtility( state ) {
 
 }
 
+// retorna estados sucessores do estado passado como parâmetro
+function getSucessors( state ) {
+
+}
+
 function switchPieces(i_clicked, j_clicked, player_turn) {
 	var piece;
 	for(var k=0; k<pieces_to_switch[i_clicked][j_clicked].length; k++) {
 		piece = pieces_to_switch[i_clicked][j_clicked][k];
 		board[piece.i][piece.j] = player_turn ;
 	}
-}
-
-// retorna estados sucessores do estado passado como parâmetro
-function getSucessors( state ) {
-
 }
 
 // Função chamada quando houer um clique dentro do canvas
