@@ -217,9 +217,6 @@ function getMouseClick( event ) {
 	}
 }
 
-function finishTurn() {
-
-}
 
 function newTurn( player_turn_local, board_local ) {
 	// console.log('board')
@@ -228,6 +225,23 @@ function newTurn( player_turn_local, board_local ) {
 	// console.log('possible_moves')
 	// print_matrix( possible_moves, boardSize);
 	// console.log('------------------------------')
+
+	// Verifica se jogo terminou (tabuleiro cheio)
+	if( isBoardFull( board_local ) ) {
+		alert( getEndOfGameMessage );
+	}
+	// Verifica se há jogada possível para o jogador do turno. Se não houver mas houver para o outro jogador, troca a vez. Se não houver jogada para nenhum jogador, acaba o jogo
+	if( ! hasPossibleMoves( player_turn_local, board_local ) ) {
+		if( hasPossibleMoves( changePlayerTurn(player_turn_local), board_local ) ) {
+			player_turn = changePlayerTurn( player_turn_local );
+			alert('Nenhuma jogada possível. Jogador ' + player_turn_local + ' perdeu a vez');
+			newTurn( player_turn, board);
+		}
+		else {
+			drawCanvas( board_local, possible_moves );
+			alert( getEndOfGameMessage() );
+		}
+	}
 
 	// Atualiza configuração de tabuleiro e possibilidades de movimento para o jogador do turno
 	var moves = getPossibleMoves( player_turn_local, board_local );
@@ -245,7 +259,8 @@ function newTurn( player_turn_local, board_local ) {
 		else if( player_turn_local == P2_TURN ) {
 			board = machineTurn( board_local );
 			player_turn = changePlayerTurn( player_turn_local );
-			setTimeout(function(){ newTurn( player_turn, board); }, 1000);
+			setTimeout(function(){ newTurn( player_turn, board); }, 600);
+			// setTimeout(function(){ newTurn( player_turn, board); }, 10);
 			// newTurn();
 		}
 	}
@@ -270,7 +285,7 @@ function getEndOfGameMessage() {
 	return text_end;
 }
 
-function hasPossibleMoves( possible_moves ) {
+function hasPossibleMoves_old( possible_moves ) {
 	for (var i = 0; i < boardSize; i++ ) {
 		for (var j = 0; j < boardSize; j++ ) {
 			if( possible_moves[i][j] == 1 ) {
@@ -280,6 +295,23 @@ function hasPossibleMoves( possible_moves ) {
 	}
 	return false;
 }
+
+function hasPossibleMoves( player_turn, board ) {
+	var boardSize = board.length;
+	moves = getPossibleMoves( player_turn, board );
+
+	for (var i = 0; i < boardSize; i++ ) {
+		for (var j = 0; j < boardSize; j++ ) {
+			if( moves.possible_moves[i][j] == 1 ) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
+
 
 function isBoardFull( board ) {
 	for (var i = 0; i < boardSize; i++ ) {
