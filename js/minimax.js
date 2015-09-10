@@ -18,7 +18,7 @@ function alphaBetaSearch( state ) {
 	state.successors = [];
 	state.utility = 0;
 	
-	v = maxValue( state, -999999, +999999);
+	v = maxValue( state, -999999999, +999999999);
 	return v.board;
 }
 
