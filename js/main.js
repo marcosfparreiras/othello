@@ -290,7 +290,6 @@ function newTurn() {
 		else {
 			count_no_moves++;
 			newTurn();
-
 		}
 	}
 	else {
@@ -310,9 +309,10 @@ function newTurn() {
 			// 		break;
 			// 	}
 			// }
-			alert( 'machine turn' );
+			// alert( 'machine turn' );
 			machineTurn();
-			newTurn();
+			setTimeout(function(){ newTurn(); }, 1000);
+			// newTurn();
 		}
 	}
 	if( game_mode == GAME_PVP ) {
