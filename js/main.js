@@ -72,6 +72,9 @@ var pos_clicked;
 // variável conta quantas vezes seguidas o jogo ficou sem jogadas possíveis. Se chegar a dois, o jogo termina, pois nenhum dos jogadores terá jogadas possíveis
 var count_no_moves = 0;
 
+// variável usada para armazenar estado de movimentação e peças para alterar (moves.possible_moves e moves.pieces_to_switch)
+var moves = {};
+
 // Variáveis usadas somente para testes
 var i_test = 0;
 var j_test = 0;
@@ -93,10 +96,10 @@ window.onload = function() {
 
 function manageScreen() {
 	if( game_screen == SCREEN_START_MENU ) {
-		drawScreenStartMenu()
+		drawScreenStartMenu();
 	}
 	else if( game_screen == SCREEN_GAME ) {
-		gameAction();
+		initializeGame();
 	}
 	else if( game_screen == SCREEN_INSTRUCTIONS ) {
 
@@ -127,12 +130,22 @@ function drawScreenStartMenu() {
 
 }
 
-function gameAction() {
+function initializeGame() {
+
 	pos_clicked = {i: 0, j:0};
-	initializeBoard();
-	initializePossibleMoves();
-	initializePiecesToSwitch();
-	getPossibleMoves( player_turn );
+	board = initializeBoard();
+	// initializePossibleMoves();
+	// initializePiecesToSwitch();
+
+	moves = getPossibleMoves( player_turn, board );
+	possible_moves = moves.possible_moves;
+	pieces_to_switch = moves.pieces_to_switch;
+
+	player_turn = P1_TURN;
+	// drawCanvas( board, possible_moves );
+	newTurn( player_turn, board );	// inicializa turno com jogador e tabuleiro
+
+
 	// canvas.addEventListener("mousedown", getMouseClick );
 	// printPiecesToSwitch();
 
@@ -159,78 +172,17 @@ function gameAction() {
 
 	// 	}
 	// }
-	drawCanvas();
-}
-
-// retorna uma ação
-function alphaBetaSearch( state ) {
-
-}
-
-// retorna um valor de utilidade
-// state: the current state in game
-// alpha: the value of the best alternative for MAX along the path to state
-// beta:  the value of the best alternative for MIN along the path to state
-function maxValue( state, alpha, beta ) {
-	var v, sucessors;
-	if( isTerminalState( state ) ) {
-		return getUtility( state );
-	}
-	v = -999999999;
-	sucessors = getSucessors( state );
-	for (var i = 0; i <= sucessors.length ; i++) {
-		var s = sucessors[i];
-		v = max( v, minValue( s, alpha, beta) );
-		if( v >= beta ) {
-			return v;
-		}
-		alpha = max( alpha, v );
-	}
-}
-
-// retorna um valor de utilidade
-// state: the current state in game
-// alpha: the value of the best alternative for MAX along the path to state
-// beta:  the value of the best alternative for MIN along the path to state
-function minValue( state, alpha, beta ) {
-	var v, sucessors;
-	if( isTerminalState( state ) ) {
-		return getUtility( state );
-	}
-	v = +999999999;
-	sucessors = getSucessors( state );
-	for (var i = 0; i <= sucessors.length ; i++) {
-		var s = sucessors[i];
-		v = min( v, maxValue( s, alpha, beta) );
-		if( v <= alpha ) {
-			return v;
-		}
-		beta = min( beta, v );
-	}
 }
 
 
-// retorna true se estado for terminal e false caso contrário
-function isTerminalState( state ) {
 
-}
-
-// retorna valor de utilidade do estado
-function getUtility( state ) {
-
-}
-
-// retorna estados sucessores do estado passado como parâmetro
-function getSucessors( state ) {
-
-}
-
-function switchPieces(i_clicked, j_clicked, player_turn) {
+function switchPieces(i_clicked, j_clicked, player_turn, board, pieces_to_switch ) {
 	var piece;
 	for(var k=0; k<pieces_to_switch[i_clicked][j_clicked].length; k++) {
 		piece = pieces_to_switch[i_clicked][j_clicked][k];
 		board[piece.i][piece.j] = player_turn ;
 	}
+	return board;
 }
 
 // Função chamada quando houer um clique dentro do canvas
@@ -251,11 +203,13 @@ function getMouseClick( event ) {
 
 	if( addPiece( event ) == IN_BOARD_VALID ) {
 		add_piece_ok_sound.play();
-		switchPieces(pos_clicked.i, pos_clicked.j, player_turn);
+		board  = switchPieces(pos_clicked.i, pos_clicked.j, player_turn, board, pieces_to_switch );
 		// printPiecesToSwitch();
 		// alert(pos_clicked.i + ', ' + pos_clicked.j);
 		// document.getElementById('add_piece_ok').play();
-		newTurn();
+		player_turn = changePlayerTurn( player_turn );
+		// drawCanvas();
+		newTurn( player_turn, board );
 	}
 	else if( addPiece( event ) == IN_BOARD_INVALID ) {
 		add_piece_error_sound.play();
@@ -263,55 +217,35 @@ function getMouseClick( event ) {
 	}
 }
 
-function newTurn() {
-	var score = getScore();
+function finishTurn() {
 
-	// Limpa matriz de peças a serem trocadas
-	for(var i=0; i<boardSize; i++) {
-		for(var j=0; j<boardSize; j++) {
-			pieces_to_switch[i][j] = new Array();
-		}
-	}
+}
 
-	// Muda jogador e exibe nova configuração do tabuleiro, já com os movimentos possíveis
-	changeTurn();
-	getPossibleMoves( player_turn );	// Durante esta ação é também preenchida a matriz pieces_to_switch
-	drawCanvas();
+function newTurn( player_turn_local, board_local ) {
+	// console.log('board')
+	// print_matrix( board, boardSize );
+	// console.log('------------------------------')
+	// console.log('possible_moves')
+	// print_matrix( possible_moves, boardSize);
+	// console.log('------------------------------')
 
-	if( isBoardFull( board ) ) {
-		alert( getEndOfGameMessage() );
-	}
+	// Atualiza configuração de tabuleiro e possibilidades de movimento para o jogador do turno
+	var moves = getPossibleMoves( player_turn_local, board_local );
+	possible_moves = moves.possible_moves;
+	pieces_to_switch = moves.pieces_to_switch;
 
-	if( ! hasPossibleMoves( possible_moves ) ) {
-		if( count_no_moves >= 2 ) {
-			// alert("Fim de jogo. Nenhum dos jogadores têm opção de jogada");
-			alert( getEndOfGameMessage() );
-		}
-		else {
-			count_no_moves++;
-			newTurn();
-		}
-	}
-	else {
-		count_no_moves = 0;
-	}
+	// Desenha na tela a nova configuração de tabuleiro e possibilidades de movimento para o jogador do turno
+	drawCanvas( board_local, possible_moves );
 
+	// Aguarda evento de escolha do movimento do jogador (máquina: escolha por algoritmo; player: espera por click)
 	if( game_mode == GAME_PVM) {
-		if( player_turn == P1_TURN ) {
+		if( player_turn_local == P1_TURN ) {
 			// Espera pelo clique na posição válida
 		}
-		else if( player_turn == P2_TURN ) {
-
-			// var now = new Date().getTime();
-			// var delay_ms = 1000;
-			// while(1) {
-			// 	if( new Date().getTime() - now > delay_ms ) {
-			// 		break;
-			// 	}
-			// }
-			// alert( 'machine turn' );
-			machineTurn();
-			setTimeout(function(){ newTurn(); }, 1000);
+		else if( player_turn_local == P2_TURN ) {
+			board = machineTurn( board_local );
+			player_turn = changePlayerTurn( player_turn_local );
+			setTimeout(function(){ newTurn( player_turn, board); }, 1000);
 			// newTurn();
 		}
 	}
@@ -362,90 +296,105 @@ function playerTurn() {
 
 }
 
-function delay( delay_ms ) {
-	var ref = new Date().getTime();
-	var now;
-	while(1) {
-		now = new Date().getTime();
-		if( ( now - ref ) >= delay_ms ) {
-			break;
-		}
-	}
-}
-
-
 // Função executa turno de jogada da máquina
-function machineTurn() {
+function machineTurn( board ) {
 	var move;
 	// alert('Turno da máquina');
-
-	move = getMachineMove();
+	move = getMachineMove( board );
 	board[move.i][move.j] = player_turn;
-	switchPieces(move.i, move.j, player_turn);
+	return switchPieces(move.i, move.j, player_turn, board, pieces_to_switch);
 }
 
-function getMachineMove() {
-	var move = getRandomMove();
+function getMachineMove( board ) {
+	var moves = getPossibleMoves( P2_TURN, board )
+	var move = getRandomMove( moves.possible_moves );
 	// alert('i: ' +move.i + ', j: ' +move.j);
 	return move;
 
 }
 
-function getRandomMove() {
+function getRandomMove( possible_moves ) {
 	for( var i=0; i<boardSize; i++ ) {
 		for( var j=0; j<boardSize; j++ ) {
 			if( possible_moves[i][j] == 1 ) {
 				return {
 					i: i,
 					j: j
-				}
+				};
 			}
 		}
 	}
 }
 
 // Troca o turno, passando a vez para o outro jogador
-function changeTurn() {
+function changePlayerTurn( player_turn ) {
 	if( player_turn == P1_TURN ) {
-		player_turn = P2_TURN;
+		return P2_TURN;
 	}
 	else if( player_turn == P2_TURN ) {
-		player_turn = P1_TURN;
+		return P1_TURN;
 	}
 	else {
-		alert('Erro no changeTurn');
+		alert('Erro no changePlayerTurn( player_turn ): ' + player_turn);
 	}
 }
 
 
 
 // Define movimentos possíveis para o jogador da rodada
-function getPossibleMoves( player ) {
+function getPossibleMoves( player_turn, board ) {
+	var boardSize = board.length;
 	// Define todas as posições de possible_moves como zero
-	var i, j;
-	for( i = 0; i < boardSize; i++) {
-		for( j = 0; j < boardSize; j++) {
-			possible_moves[i][j] = 0;
+	var moves = {};
+	// for( i = 0; i < boardSize; i++) {
+	// 	for( j = 0; j < boardSize; j++) {
+	// 		possible_moves[i][j] = 0;
+	// 	}
+	// }
+	moves.pieces_to_switch = new Array(boardSize);
+	for (var i = 0; i < boardSize; i++) {
+		moves.pieces_to_switch[i] = new Array(boardSize);
+	}
+	for (var i = 0; i < boardSize; i++) {
+		for (var j = 0; j < boardSize; j++) {
+			moves.pieces_to_switch[i][j] = new Array();
 		}
 	}
+
+
+	// inicializa possible_movies
+	moves.possible_moves = new Array(boardSize);
+	for (var i = 0; i < boardSize; i++) {
+		moves.possible_moves[i] = new Array(boardSize);
+	}
+	for (var i = 0; i < boardSize; i++) {
+		for (var j = 0; j < boardSize; j++) {
+			moves.possible_moves[i][j] = 0;
+		}
+	}
+
+	console.log('---- zerando possible_moves ----');
+	print_matrix( moves.possible_moves, boardSize );
 
 	// Itera sobre cada casa e busca movimentos possíveis a partir dela
 	for( i = 0; i < boardSize; i++) {
 		for( j = 0; j < boardSize; j++) {
-			if( board[i][j] == player ) {
+			if( board[i][j] == player_turn ) {
 				// possible_moves[i][j+1] = 1;
-				searchPossibleMoves( player, i, j);
+				moves = searchPossibleMoves( player_turn, i, j, board, moves);
 				// possible_moves[i][j] = 1;
 			}
 		}
 	}
+	return moves;
 }
 
 
 
 
 
-function searchPossibleMoves( player_turn, i_piece, j_piece ) {
+// moves: hash com .possible_moves e .pieces_to_switch
+function searchPossibleMoves( player_turn, i_piece, j_piece, board, moves ) {
 	var player, opponent;
 	if( player_turn == P1_TURN ) {
 		player = P1_TURN;
@@ -456,20 +405,22 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 		opponent = P1_TURN;
 	}
 
-	console.log('--------------------------------');
-	console.log('Peça - i: ' + i_piece + ', j: ' + j_piece );
+	// console.log('--------------------------------');
+	// console.log('Peça - i: ' + i_piece + ', j: ' + j_piece );
+
+	// inicializa pieces_to_switch
+	
 
 	// Movimentos horizontais e verticais
-
-	searchPossibleMovesLookRight( player, opponent, i_piece, j_piece );
-	searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece );
-	searchPossibleMovesLookUp( player, opponent, i_piece, j_piece );
-	searchPossibleMovesLookDown( player, opponent, i_piece, j_piece );
-
-	searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece );
-	searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece );
-	searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece );
-	searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece );
+	moves = searchPossibleMovesLookRight( player, opponent, i_piece, j_piece, board, moves );
+	// moves = searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, moves );
+	// moves = searchPossibleMovesLookUp( player, opponent, i_piece, j_piece, moves );
+	// moves = searchPossibleMovesLookDown( player, opponent, i_piece, j_piece, moves );
+	
+	// moves = searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece, moves );
+	// moves = searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece, moves );
+	// moves = searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece, moves );
+	// moves = searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece, moves );
 
 	// aparentemente tudo certo com os movimentos verticais e horizontais
 	// left-down parece estar ok
@@ -478,17 +429,17 @@ function searchPossibleMoves( player_turn, i_piece, j_piece ) {
 	// left-down parece estar ok
 
 	console.log('--------------------------------');
-
+	return moves;
 	// possible_moves[i_piece][j_piece] = 1;
 }
 
-function searchPossibleMovesLookRight( player, opponent, i_piece, j_piece ) {
+function searchPossibleMovesLookRight( player, opponent, i_piece, j_piece, board, moves ) {
 	var j;
 	// pieces_to_switch[0][0].push( { i: 1, j: 1} );
-	var changeable_pieces = new Array();
-	console.log('Pre look-rigt');
+	changeable_pieces = new Array();
+	// console.log('Pre look-rigt');
 	if( j_piece <= boardSize ) {
-		console.log('Entrou look-rigt');
+		// console.log('Entrou look-rigt');
 		// console.log('got: ' + board[i_piece][j_piece+1]);
 		// console.log('got: ' + board[i_piece][j_piece+1]);
 		// console.log('player_turn: ' + player);
@@ -496,8 +447,8 @@ function searchPossibleMovesLookRight( player, opponent, i_piece, j_piece ) {
 		if (typeof board[i_piece] != 'undefined') {
 			if (typeof board[i_piece][j_piece+1] != 'undefined') {
 				if( board[i_piece][j_piece+1] == opponent ) {
-					changeable_pieces.push( { i: i_piece, j: j_piece+1} );
-					console.log('Entrou DEEP look-rigt');
+					// changeable_pieces.push( { i: i_piece, j: j_piece+1} );
+					// console.log('Entrou DEEP look-rigt');
 					// console.log('encontrou oponente à esquerda');
 					for( j=j_piece+2; j<boardSize; j++ ) {
 						// console.log('no for');
@@ -514,11 +465,11 @@ function searchPossibleMovesLookRight( player, opponent, i_piece, j_piece ) {
 							break;
 						}
 						else if (board[i_piece][j] == 0 ) {
-							possible_moves[i_piece][j] = 1;
+							moves.possible_moves[i_piece][j] = 1;
 							// if( pieces_to_switch[i_piece][j] )
 							// pieces_to_switch[i_piece][j] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
-								Array.prototype.push.apply(pieces_to_switch[i_piece][j], changeable_pieces);
+								Array.prototype.push.apply(moves.pieces_to_switch[i_piece][j], changeable_pieces);
 							}
 							// printPiecesToSwitch();
 							// console.log('adicionou');
@@ -532,9 +483,10 @@ function searchPossibleMovesLookRight( player, opponent, i_piece, j_piece ) {
 			}
 		}
 	}
+	return moves;
 }
 
-function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece ) {
+function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, moves ) {
 	var j;
 	var changeable_pieces = new Array();
 	if( j_piece >= 1 ) {
@@ -572,6 +524,8 @@ function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece ) {
 			}
 		}
 	}
+	return { possible_moves: possible_moves, 
+			pieces_to_switch: pieces_to_switch};
 }
 
 function searchPossibleMovesLookUp( player, opponent, i_piece, j_piece ) {
@@ -914,7 +868,7 @@ function initializePossibleMoves() {
 
 // Inicializa tabuleiro com todas as casas vazias - board[a][b] diz respeito à linha a e coluna b
 function initializeBoard() {
-	board = new Array(boardSize);
+	var board = new Array(boardSize);
 	for (var i = 0; i < boardSize; i++) {
 		board[i] = new Array(boardSize);
 	}
@@ -934,6 +888,7 @@ function initializeBoard() {
 	// Posiciona as duas peças iniciais do Player 2
 	board[v_half_board_pieces-1][h_half_board_pieces-1] = P2_PIECE;
 	board[v_half_board_pieces][h_half_board_pieces] = P2_PIECE;
+	return board;
 }
 
 function getScore() {
@@ -956,9 +911,9 @@ function getScore() {
 	};
 }
 
-function drawCanvas() {
+function drawCanvas( board, possible_moves ) {
 	drawScreen();
-	drawBoard();
+	drawBoard( board, possible_moves );
 	drawTurnControl();
 }
 
@@ -1041,8 +996,9 @@ function drawPieces() {
 
 // Desenha tabuleiro (já preenchido com as peças que o compõem)
 // Por algum motivo, para a impressão ficar correta, está sendo necessário verificar a posição [j][i]
-function drawBoard() {	// Desenha tabuleiro (todas as casas)
+function drawBoard(board, possible_moves) {	// Desenha tabuleiro (todas as casas)
 	// Desenha tabuleiro vazio
+	var boardSize = board.length;
 	for(var i=0; i<boardSize; i++ ) {
 		for(var j=0; j<boardSize; j++ ) {
 			// drawEmptySquare( i*space_size + x_offset, j*space_size + y_offset, space_size );
