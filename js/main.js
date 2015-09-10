@@ -413,14 +413,14 @@ function searchPossibleMoves( player_turn, i_piece, j_piece, board, moves ) {
 
 	// Movimentos horizontais e verticais
 	moves = searchPossibleMovesLookRight( player, opponent, i_piece, j_piece, board, moves );
-	// moves = searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, moves );
-	// moves = searchPossibleMovesLookUp( player, opponent, i_piece, j_piece, moves );
-	// moves = searchPossibleMovesLookDown( player, opponent, i_piece, j_piece, moves );
+	moves = searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, board, moves );
+	moves = searchPossibleMovesLookUp( player, opponent, i_piece, j_piece, board, moves );
+	moves = searchPossibleMovesLookDown( player, opponent, i_piece, j_piece, board, moves );
 	
-	// moves = searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece, moves );
-	// moves = searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece, moves );
-	// moves = searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece, moves );
-	// moves = searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece, moves );
+	moves = searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece, board, moves );
+	moves = searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece, board, moves );
+	moves = searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece, board, moves );
+	moves = searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece, board, moves );
 
 	// aparentemente tudo certo com os movimentos verticais e horizontais
 	// left-down parece estar ok
@@ -486,7 +486,7 @@ function searchPossibleMovesLookRight( player, opponent, i_piece, j_piece, board
 	return moves;
 }
 
-function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, moves ) {
+function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, board, moves ) {
 	var j;
 	var changeable_pieces = new Array();
 	if( j_piece >= 1 ) {
@@ -508,10 +508,10 @@ function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, moves 
 							break;
 						}
 						else if (board[i_piece][j] == 0 ) {
-							possible_moves[i_piece][j] = 1;
+							moves.possible_moves[i_piece][j] = 1;
 							// pieces_to_switch[i_piece][j] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
-								Array.prototype.push.apply(pieces_to_switch[i_piece][j], changeable_pieces);
+								Array.prototype.push.apply(moves.pieces_to_switch[i_piece][j], changeable_pieces);
 							}
 							// printPiecesToSwitch();
 							break;
@@ -524,11 +524,10 @@ function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, moves 
 			}
 		}
 	}
-	return { possible_moves: possible_moves, 
-			pieces_to_switch: pieces_to_switch};
+	return moves;
 }
 
-function searchPossibleMovesLookUp( player, opponent, i_piece, j_piece ) {
+function searchPossibleMovesLookUp( player, opponent, i_piece, j_piece, board, moves ) {
 	var i;
 	// console.log('Pre look-up');
 	var changeable_pieces = new Array();
@@ -551,10 +550,10 @@ function searchPossibleMovesLookUp( player, opponent, i_piece, j_piece ) {
 							break;
 						}
 						else if ( board[i][j_piece] == 0 ) {
-							possible_moves[i][j_piece] = 1;
+							moves.possible_moves[i][j_piece] = 1;
 							// pieces_to_switch[i][j_piece] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
-								Array.prototype.push.apply(pieces_to_switch[i][j_piece], changeable_pieces);
+								Array.prototype.push.apply(moves.pieces_to_switch[i][j_piece], changeable_pieces);
 							}
 							// printPiecesToSwitch();
 							break;
@@ -567,9 +566,10 @@ function searchPossibleMovesLookUp( player, opponent, i_piece, j_piece ) {
 			}
 		}
 	}
+	return moves;
 }
 
-function searchPossibleMovesLookDown( player, opponent, i_piece, j_piece ) {
+function searchPossibleMovesLookDown( player, opponent, i_piece, j_piece, board, moves ) {
 	var i;
 	var changeable_pieces = new Array();
 	// print_matrix(board, boardSize);
@@ -593,10 +593,10 @@ function searchPossibleMovesLookDown( player, opponent, i_piece, j_piece ) {
 							break;
 						}
 						else if (board[i][j_piece] == 0 ) {
-							possible_moves[i][j_piece] = 1;
+							moves.possible_moves[i][j_piece] = 1;
 							// pieces_to_switch[i][j_piece] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
-								Array.prototype.push.apply(pieces_to_switch[i][j_piece], changeable_pieces);
+								Array.prototype.push.apply(moves.pieces_to_switch[i][j_piece], changeable_pieces);
 							}
 							// printPiecesToSwitch();
 							// console.log('adicionou');
@@ -610,10 +610,11 @@ function searchPossibleMovesLookDown( player, opponent, i_piece, j_piece ) {
 			}
 		}
 	}
+	return moves;
 }
 
 // Movimentos Diagonais
-function searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece ) {
+function searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece, board, moves ) {
 	// look right-down
 	var i, j;
 	var changeable_pieces = new Array();
@@ -641,10 +642,10 @@ function searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece ) 
 							break;
 						}
 						else if (board[i][j] == 0 ) {
-							possible_moves[i][j] = 1;
+							moves.possible_moves[i][j] = 1;
 							// pieces_to_switch[i][j] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
-								Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
+								Array.prototype.push.apply(moves.pieces_to_switch[i][j], changeable_pieces);
 							}
 							// printPiecesToSwitch();
 							break;
@@ -658,9 +659,10 @@ function searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece ) 
 			}
 		}
 	}
+	return moves;
 }
 
-function searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece ) {
+function searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece, board, moves ) {
 	// look left-up
 	var i, j;
 	var changeable_pieces = new Array();
@@ -684,10 +686,10 @@ function searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece ) {
 							break;
 						}
 						else if (board[i][j] == 0 ) {
-							possible_moves[i][j] = 1;
+							moves.possible_moves[i][j] = 1;
 							// pieces_to_switch[i][j] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
-								Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
+								Array.prototype.push.apply(moves.pieces_to_switch[i][j], changeable_pieces);
 							}
 							// printPiecesToSwitch();
 							break;
@@ -702,9 +704,10 @@ function searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece ) {
 			}
 		}
 	}
+	return moves;
 }
 
-function searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece ) {
+function searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece, board, moves ) {
 	// look right-up
 	var i, j;
 	var changeable_pieces = new Array();
@@ -728,10 +731,10 @@ function searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece ) {
 							break;
 						}
 						else if (board[i][j] == 0 ) {
-							possible_moves[i][j] = 1;
+							moves.possible_moves[i][j] = 1;
 							// pieces_to_switch[i][j] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
-								Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
+								Array.prototype.push.apply(moves.pieces_to_switch[i][j], changeable_pieces);
 							}
 							// printPiecesToSwitch();
 							break;
@@ -746,9 +749,10 @@ function searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece ) {
 			}
 		}
 	}
+	return moves;
 }
 
-function searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece ) {
+function searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece, board, moves ) {
 	var i, j;
 	var changeable_pieces = new Array();
 	// // look left-down
@@ -771,10 +775,10 @@ function searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece ) {
 							break;
 						}
 						else if ( board[i][j] == 0 ) {
-							possible_moves[i][j] = 1;
+							moves.possible_moves[i][j] = 1;
 							// pieces_to_switch[i][j] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
-								Array.prototype.push.apply(pieces_to_switch[i][j], changeable_pieces);
+								Array.prototype.push.apply(moves.pieces_to_switch[i][j], changeable_pieces);
 							}
 							// printPiecesToSwitch();
 							break;
@@ -789,6 +793,7 @@ function searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece ) {
 			}
 		}
 	}
+	return moves;
 }
 
 // Adiciona nova peça ao tabuleiro. Se local clicado já estiver ocupado, retorna false. Caso contrário, adiciona peça e retorna true
