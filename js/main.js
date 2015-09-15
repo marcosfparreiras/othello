@@ -195,7 +195,7 @@ function alphaBetaSearch( state, board, player_turn ) {
 	// state.successors = [];
 	// state.utility = 0;
 	// state.player_turn = player_turn;
-	
+
 	v = maxValue( state, -INFINITY, +INFINITY);
 	return v.board;
 }
@@ -482,7 +482,7 @@ function machineTurn( board, player_turn ) {
 	// alert('Turno da máquina');
 	// move = getMachineMove( board );
 	// board[move.i][move.j] = player_turn;
-	
+
 	var state = {};
 
 	state.depth = 0;
@@ -599,14 +599,14 @@ function searchPossibleMoves( player_turn, i_piece, j_piece, board, moves ) {
 	// console.log('Peça - i: ' + i_piece + ', j: ' + j_piece );
 
 	// inicializa pieces_to_switch
-	
+
 
 	// Movimentos horizontais e verticais
 	moves = searchPossibleMovesLookRight( player, opponent, i_piece, j_piece, board, moves );
 	moves = searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, board, moves );
 	moves = searchPossibleMovesLookUp( player, opponent, i_piece, j_piece, board, moves );
 	moves = searchPossibleMovesLookDown( player, opponent, i_piece, j_piece, board, moves );
-	
+
 	moves = searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece, board, moves );
 	moves = searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece, board, moves );
 	moves = searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece, board, moves );

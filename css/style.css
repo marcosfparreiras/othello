@@ -54,3 +54,61 @@ canvas { border: 1px solid black; }
 #music_control, #volume_control{ text-align: left; color: #1C1C1C; }
 #sound_config #music_control span:first-of-type{ width: 25%; display: inline-block; }
 #sound_config #volume_control span:first-of-type{ width: 25%; display: inline-block; }
+
+.main-menu{
+  width: 50%;
+  margin: 0 auto;
+  background-color: rgba(238, 238, 238, 0.4);
+  background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.4) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.4) 75%, rgba(0, 0, 0, 0.4)),
+  linear-gradient(-45deg, rgba(0, 0, 0, 0.4) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.4) 75%, rgba(0, 0, 0, 0.4));
+  background-size:60px 60px;
+  height: auto;
+  padding: 10px 0;
+  position: relative;
+}
+
+.main-menu .game-title {
+  font-size: 200%;
+  font-weight: bold;
+  color: #006004;
+  text-shadow: 2px 2px 2px silver;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 5px 0;
+}
+
+#btn_play, #btn_instructions, #btn_options{
+  width: 80px;
+  height: 80px;
+  border: 5px solid #004D02;
+  border-radius: 50%;
+  color: white;
+  background-color: #005909;
+  font-size: 0.6rem;
+  font-weight: bold;
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+#btn_play:hover, #btn_instructions:hover, #btn_options:hover{
+  background-color: #00AF17;
+  border-color: #008E04;
+}
+
+#btn_play:focus, #btn_instructions:focus, #btn_options:focus{ outline: none; }
+
+.menu-options ul{ list-style: none; padding-left: 0; }
+.menu-options ul li{
+  margin: 50px auto;
+}
+
+.developed-by{
+  position: absolute;
+  bottom: 5px;
+  width: 100%;
+  text-align: center;
+  color: #5E5E5E;
+  text-shadow: 1px 1px 5px #838383;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+hr.hr-footer{ position: absolute; bottom: 25px; width: 100%; }
