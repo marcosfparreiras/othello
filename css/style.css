@@ -56,7 +56,6 @@ canvas { border: 1px solid black; }
 #sound_config #volume_control span:first-of-type{ width: 25%; display: inline-block; }
 
 .main-menu{
-  width: 50%;
   margin: 0 auto;
   background-color: rgba(238, 238, 238, 0.4);
   background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.4) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.4) 75%, rgba(0, 0, 0, 0.4)),
@@ -112,3 +111,37 @@ canvas { border: 1px solid black; }
 }
 
 hr.hr-footer{ position: absolute; bottom: 25px; width: 100%; }
+
+/* ------- Media queries -- Para responsividade ------- */
+
+/* Small devices (landscape phones, 34em and up) */
+@media (min-width: 34em) { }
+
+/* Medium devices (tablets, 48em and up) */
+@media (min-width: 48em) { }
+
+/* Large devices (desktops, 62em and up) */
+@media (min-width: 62em) {
+  .main-menu{ width: 50%; }
+}
+
+/* Extra large devices (large desktops, 75em and up) */
+@media (min-width: 75em) { }
+
+
+/* Small devices (portrait phones, less than 34em) */
+@media (max-width: 33.9em) { }
+
+/* Small devices (landscape phones, less than 48em) */
+@media (max-width: 47.9em) { }
+
+/* Medium devices (tablets, less than 62em) */
+@media (max-width: 61.9em) {
+  .main-menu { width: 100%; }
+}
+
+/* Large devices (desktops, less than 75em) */
+@media (max-width: 74.9em) { }
+
+/* Extra large devices (large desktops) */
+/* No media query since the extra-large breakpoint has no upper bound on its width */
