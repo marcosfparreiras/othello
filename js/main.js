@@ -134,7 +134,6 @@ function drawScreenStartMenu() {
 }
 
 function initializeGame() {
-
 	pos_clicked = {i: 0, j:0};
 	board = initializeBoard();
 	// initializePossibleMoves();
@@ -147,34 +146,6 @@ function initializeGame() {
 	player_turn = P1_TURN;
 	// drawCanvas( board, possible_moves );
 	newTurn( player_turn, board );	// inicializa turno com jogador e tabuleiro
-
-
-	// canvas.addEventListener("mousedown", getMouseClick );
-	// printPiecesToSwitch();
-
-	// console.log('---- Matriz board -----');
-	// print_matrix( board, boardSize );
-	// console.log('---- Matriz possible_moves -----');
-	// print_matrix( possible_moves, boardSize );
-
-	// console.log('---- Matriz pieces_to_switch -----');
-	// print_matrix( pieces_to_switch, boardSize );
-	// pieces_to_switch[0][0].push( { i: 1, j: 1} );
-
-	// pos = pieces_to_switch[0][0][0];
-
-	// console.log( 'Testando: ' + pos.i + ', ' + pos.j);
-	// for(var i=0; i<boardSize; i++) {
-	// 	for(var j=0; j<boardSize; j++) {
-	// 		// if( typeof pieces_to_switch[i][j] != "undefined" ) {
-
-	// 		// }
-	// 		for(var k=0; k<pieces_to_switch[i][j].length; k++) {
-
-	// 		}
-
-	// 	}
-	// }
 }
 
 
@@ -186,8 +157,8 @@ function initializeGame() {
 // utilty = 0
 // successors = []
 // player_turn
-function alphaBetaSearch( state, board, player_turn ) {
-	var v; //, state;
+function alphaBetaSearch( state ) {
+	var next_state; // o retorno da busca miniMax será um novo estado de tabuleiro, que deverá ser retornado como sendo a jogada efetuada
 	// state = {};
 
 	// state.depth = 0;
@@ -195,9 +166,26 @@ function alphaBetaSearch( state, board, player_turn ) {
 	// state.successors = [];
 	// state.utility = 0;
 	// state.player_turn = player_turn;
+	// var board_test;
+	var board_test = new Array(boardSize);
+	for (var i = 0; i < boardSize; i++) {
+		board_test[i] = new Array(boardSize);
+	}
+	board_test[2][2] = 2;
+	board_test[2][3] = 2;
+	board_test[3][3] = 2;
+	board_test[2][1] = 1;
+	board_test[1][2] = 1;
+	return board_test;
+	// for (var i = 0; i < boardSize; i++) {
+	// 	for (var j = 0; j < boardSize; j++) {
+	// 		if( i==1 )
+	// 		board_test[i][j] = 1;
+	// 	}
+	// }
 	
-	v = maxValue( state, -INFINITY, +INFINITY);
-	return v.board;
+	next_state = maxValue( state, -INFINITY, +INFINITY);
+	return next_state.board;
 }
 
 // retorna um valor de utilidade
@@ -217,7 +205,7 @@ function maxValue( state, alpha, beta ) {
 		// return getUtility( state );
 	}
 	v = -INFINITY;
-	sucessors = getSucessors( state );
+	sucessors = getSuccessors( state );
 	for (var i = 0; i <= sucessors.length ; i++) {
 		var s = sucessors[i];
 		v = Math.max( v, minValue( s, alpha, beta) );
@@ -245,7 +233,7 @@ function minValue( state, alpha, beta ) {
 		// return getUtility( state );
 	}
 	v = +INFINITY;
-	sucessors = getSucessors( state );
+	sucessors = getSuccessors( state );
 	for (var i = 0; i <= sucessors.length ; i++) {
 		var s = sucessors[i];
 		v = Math.min( v, maxValue( s, alpha, beta) );
@@ -293,9 +281,15 @@ function getPiecesDiffernce( state ) {
 }
 
 // retorna estados sucessores do estado passado como parâmetro
-function getSucessors( state ) {
+	// state.depth = 0;
+	// state.board = board;
+	// state.successors = [];
+	// state.utility = 0;
+	// state.player_turn = player_turn;
+function getSuccessors( state ) {
 	var board, moves;
-	var sucessors = [];
+	var successors = [];
+	// var sucessor;
 
 	moves = getPossibleMoves( state.player_turn, state.board );
 	moves.possible_moves;
@@ -304,7 +298,13 @@ function getSucessors( state ) {
 	for( var i=0; i<moves.possible_moves.length; i++ ) {
 		for( var j=0; j<moves.possible_moves.length; j++ ) {
 			if( moves.possible_moves[i][j] == 1 ) {
-				successors.push( switchPieces(i, j, state.player_turn, state.board, moves.pieces_to_switch ) );
+				var successor = {}
+				successor.depth = state.depth + 1;
+				successor.bord = switchPieces(i, j, state.player_turn, state.board, moves.pieces_to_switch );
+				successor.successors = [];
+				successor.utility = 0;
+				successor.player_turn = changePlayerTurn( state.player_turn );
+				successors.push( successor );
 			}
 		}
 	}
@@ -407,6 +407,7 @@ function newTurn( player_turn_local, board_local ) {
 		}
 		else if( player_turn_local == P2_TURN ) {
 			board = machineTurn( board_local );
+			console.log('OK');
 			player_turn = changePlayerTurn( player_turn_local );
 			setTimeout(function(){ newTurn( player_turn, board); }, 600);
 			// setTimeout(function(){ newTurn( player_turn, board); }, 10);
@@ -491,7 +492,7 @@ function machineTurn( board, player_turn ) {
 	state.utility = 0;
 	state.player_turn = player_turn;
 
-	return alphaBetaSearch( state, board, player_turn );
+	return alphaBetaSearch( state );
 	// return switchPieces(move.i, move.j, player_turn, board, pieces_to_switch);
 }
 
@@ -1210,20 +1211,7 @@ function drawBoard(board, possible_moves) {	// Desenha tabuleiro (todas as casas
 
 		}
 	}
-
-	// drawPossibleMoves();
 	drawPieces();
-	// Desenha peças que já estão no tabuleiro
-	// for (var i = 0; i < boardSize; i++) {
-	// 	for (var j = 0; j < boardSize; j++) {
-	// 		if( board[i][j] == P1_PIECE )  {
-	// 			drawPiece( x_offset - space_size/2 + (j+1)*space_size, y_offset - space_size/2 + (i+1)*space_size, pieceRaidus, P1_COLOR);
-	// 		}
-	// 		else if( board[i][j] == P2_PIECE ) {
-	// 			drawPiece( x_offset - space_size/2 + (j+1)*space_size, y_offset - space_size/2 + (i+1)*space_size, pieceRaidus, P2_COLOR);
-	// 		}
-	// 	}
-	// }
 }
 
 // Desenha canvas
@@ -1314,219 +1302,4 @@ function printPiecesToSwitch() {
 		}
 	}
 }
-
-
-
-function startGame() {
-
-}
-
-
-// Código que estava no searchPossibleMoves antes de modularizar
-// look right
-	// console.log('Pre look-rigt');
-	// if( j_piece <= boardSize ) {
-	// 	console.log('Entrou look-rigt');
-	// 	// console.log('got: ' + board[i_piece][j_piece+1]);
-	// 	// console.log('got: ' + board[i_piece][j_piece+1]);
-	// 	// console.log('player_turn: ' + player);
-	// 	// console.log('opponent: ' + opponent);
-	// 	if( board[i_piece][j_piece+1] == opponent ) {
-	// 		console.log('Entrou DEEP look-rigt');
-	// 		// console.log('encontrou oponente à esquerda');
-	// 		for( j=j_piece+2; j<boardSize; j++ ) {
-	// 			// console.log('no for');
-	// 			if( board[i_piece][j] == opponent ) {
-	// 				// console.log('opponent');
-	// 				continue;
-	// 			}
-	// 			else if( board[i_piece][j] == player ) {
-	// 				// console.log('player');
-	// 				break;
-	// 			}
-	// 			else if (board[i_piece][j] == 0 ) {
-	// 				possible_moves[i_piece][j] = 1;
-	// 				// console.log('adicionou');
-	// 				break;
-	// 			}
-	// 			else {
-	// 				// alert('Erro inesperado no searchPossibleMoves');
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	// console.log('Pre look-left');
-	// // look left
-	// if( j_piece >= 1 ) {
-	// 	console.log('Entrou look-left');
-	// 	if( board[i_piece][j_piece-1] == opponent ) {
-	// 		console.log('Entrou DEEP look-left');
-	// 		for( j=j_piece-2; j>=0; j--) {
-	// 			if( board[i_piece][j] == opponent ) {
-	// 				continue;
-	// 			}
-	// 			else if( board[i_piece][j] == player ) {
-	// 				break;
-	// 			}
-	// 			else if (board[i_piece][j] == 0 ) {
-	// 				possible_moves[i_piece][j] = 1;
-	// 				break;
-	// 			}
-	// 			else {
-	// 				// alert('Erro inesperado no searchPossibleMoves');
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	// // look up
-	// console.log('Pre look-up');
-	// if( i_piece >= 1 ) {
-	// 	console.log('Entrou look-up');
-	// 	if( board[i_piece-1][j_piece] == opponent ) {
-	// 		console.log('Entrou DEEP look-up');
-	// 		for( i=i_piece-2; i>=0; i--) {
-	// 			if( board[i][j_piece] == opponent ) {
-	// 				continue;
-	// 			}
-	// 			else if( board[i][j_piece] == player ) {
-	// 				break;
-	// 			}
-	// 			else if ( board[i][j_piece] == 0 ) {
-	// 				possible_moves[i][j_piece] = 1;
-	// 				break;
-	// 			}
-	// 			else {
-	// 				// alert('Erro inesperado no searchPossibleMoves');
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	// // // look down
-	// console.log('Pre look-down');
-	// if( i_piece <= boardSize ) {
-	// 	console.log('Entrou look-down');
-	// 	if( board[i_piece+1][j_piece] == opponent ) {
-	// 		console.log('Entrou DEEP look-down');
-	// 		for( i=i_piece+2; i<boardSize; i++) {
-	// 			if( board[i][j_piece] == opponent ) {
-	// 				continue;
-	// 			}
-	// 			else if( board[i][j_piece] == player ) {
-	// 				break;
-	// 			}
-	// 			else if ( board[i][j_piece] == 0 ) {
-	// 				possible_moves[i][j_piece] = 1;
-	// 				break;
-	// 			}
-	// 			else {
-	// 				// alert('Erro inesperado no searchPossibleMoves');
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	// // Movimentos Diagonais
-
-	// // look right-down
-	// console.log('Pre look-rigt-down');
-	// if( j_piece <= boardSize-2 && i_piece <= boardSize-2 ) {
-	// 	console.log('Entrou look-rigt-down');
-	// 	if( board[i_piece+1][j_piece+1] == opponent ) {
-	// 		console.log('Entrou DEEP look-rigt-down');
-	// 		for( i=i_piece+2, j=j_piece+2; i<boardSize && j<boardSize; i++, j++ ) {
-	// 			// if( i>= boardSize || j>=boardSize ) {
-	// 			// 	break;
-	// 			// }
-
-	// 			if( board[i][j] == opponent ) {
-	// 				continue;
-	// 			}
-	// 			else if( board[i][j] == player ) {
-	// 				break;
-	// 			}
-	// 			else if (board[i_piece][j] == 0 ) {
-	// 				possible_moves[i][j] = 1;
-	// 				break;
-	// 			}
-	// 			else {
-	// 				// alert('Erro inesperado no searchPossibleMoves');
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	// // look left-up
-	// console.log('Pre look-left-up');
-	// if( j_piece >= 1 && i_piece >= 1 ) {
-	// 	console.log('Entrou look-left-up');
-	// 	if( board[i_piece-1][j_piece-1] == opponent ) {
-	// 		console.log('Entrou DEEP look-left-up');
-	// 		for( i=i_piece-2, j=j_piece-2; i>=0 && j>=0 ; i--, j--) {
-	// 			if( board[i][j] == opponent ) {
-	// 				continue;
-	// 			}
-	// 			else if( board[i][j] == player ) {
-	// 				break;
-	// 			}
-	// 			else if (board[i_piece][j] == 0 ) {
-	// 				possible_moves[i][j] = 1;
-	// 				break;
-	// 			}
-	// 			else {
-	// 				// alert('Erro inesperado no searchPossibleMoves');
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	// // look right-up
-	// console.log('Pre look-rigtup');
-	// if( j_piece <= boardSize-2 && i_piece >= 1 ) {
-	// 	console.log('Entrou look-rigt-up');
-	// 	if( board[i_piece-1][j_piece+1] == opponent ) {
-	// 		console.log('Entrou DEEP look-rigt-up');
-	// 		for( i=i_piece-2, j=j_piece+2; i>=0 && j<boardSize; i--, j++ ) {
-	// 			if( board[i][j] == opponent ) {
-	// 				continue;
-	// 			}
-	// 			else if( board[i][j] == player ) {
-	// 				break;
-	// 			}
-	// 			else if (board[i_piece][j] == 0 ) {
-	// 				possible_moves[i][j] = 1;
-	// 				break;
-	// 			}
-	// 			else {
-	// 				// alert('Erro inesperado no searchPossibleMoves');
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	// // // look left-down
-	// console.log('Pre left-down');
-	// if( j_piece >= 1 && i_piece <= boardSize ) {
-	// 	if( board[i_piece+1][j_piece-1] == opponent ) {
-	// 		console.log('Entrou DEEP left-down');
-	// 		for( i=i_piece+2, j=j_piece-2; i<boardSize && j>=0; i++, j--) {
-	// 			if( board[i][j] == opponent ) {
-	// 				continue;
-	// 			}
-	// 			else if( board[i][j] == player ) {
-	// 				break;
-	// 			}
-	// 			else if ( board[i][j] == 0 ) {
-	// 				possible_moves[i][j] = 1;
-	// 				break;
-	// 			}
-	// 			else {
-	// 				// alert('Erro inesperado no searchPossibleMoves');
-	// 			}
-	// 		}
-	// 	}
-
-	// }
 
