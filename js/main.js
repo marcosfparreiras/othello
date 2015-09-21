@@ -148,105 +148,35 @@ function initializeGame() {
 	newTurn( player_turn, board );	// inicializa turno com jogador e tabuleiro
 }
 
-function getBestNextMove(state) {
-	var successors = getSuccessors( state );
-	for(var i=0; i<successors.length; i++) {
-		console.log(successors[i].utility);
-	}
+// retorna board, possible_moves e pieces_to_switch 
+function miniMaxDecision(state) {
+	// move receberá o estado retornado de maxValue
+	var move = maxValue(state);
 }
 
-
-
-// retorna uma ação
-// entradas: state - current state in game
-// depth = 0
-// board = board
-// utilty = 0
-// successors = []
-// player_turn
-function alphaBetaSearch( state ) {
-	var next_state; // o retorno da busca miniMax será um novo estado de tabuleiro, que deverá ser retornado como sendo a jogada efetuada
-
-	next_state = maxValue( state, -INFINITY, +INFINITY);
-	return next_state;	// Retorna não só o novo tabuleiro como também possible_moves
-
-	// Bloco de código para verificar se retorno de board está ok
-	// var board_test = new Array(boardSize);
-	// for (var i = 0; i < boardSize; i++) {
-	// 	board_test[i] = new Array(boardSize);
-	// }
-	// board_test[2][2] = 2;
-	// board_test[2][3] = 2;
-	// board_test[3][3] = 2;
-	// board_test[2][1] = 1;
-	// board_test[1][2] = 1;
-	// return board_test;
-
-	
-}
-
-// retorna um valor de utilidade
-// state: the current state in game
-// alpha: the value of the best alternative for MAX along the path to state
-// beta:  the value of the best alternative for MIN along the path to state
-function maxValue( state, alpha, beta ) {
-	var v, sucessors;
+// Retorna um estado
+function maxValue(state) {
+	var successors;
 	if( isTerminalState( state ) ) {
-		sucessors = [];
-		return {
-			depth: state.depth,
-			utility: getUtility( state ),
-			board: state.board,
-			sucessors: sucessors
-		};
-		// return getUtility( state );
+		state.utility = getUtility( state );
+		return state;
 	}
-	v = {};
+	state.utility = -INFINITY;
+	successors = getSuccessors(state);
 
-	v.depth = state.depth;
-	v.board = board;
-	v.successors = [];
-	v.utility = 0;
-	v.player_turn = player_turn;
-	v = -INFINITY;
-	sucessors = getSuccessors( state );
-	for (var i = 0; i <= sucessors.length ; i++) {
-		var s = sucessors[i];
-		v = Math.max( v, minValue( s, alpha, beta) );
-		if( v >= beta ) {
-			return v;
-		}
-		alpha = Math.max( alpha, v );
-	}
+
 }
 
-// retorna um valor de utilidade
-// state: the current state in game
-// alpha: the value of the best alternative for MAX along the path to state
-// beta:  the value of the best alternative for MIN along the path to state
-function minValue( state, alpha, beta ) {
-	var v, sucessors;
-	if( isTerminalState( state ) ) {
-		sucessors = [];
-		return {
-			depth: state.depth,
-			utility: getUtility( state ),
-			board: state.board,
-			sucessors: sucessors
-		};
-		// return getUtility( state );
-	}
-	v = +INFINITY;
-	sucessors = getSuccessors( state );
-	for (var i = 0; i <= sucessors.length ; i++) {
-		var s = sucessors[i];
-		v = Math.min( v, maxValue( s, alpha, beta) );
-		if( v <= alpha ) {
-			return v;
-		}
-		beta = Math.min( beta, v );
-	}
+// Retorna um estado
+function minValue(state) {
+
 }
+
+
+
+
+
+// }
 
 
 
@@ -265,18 +195,18 @@ function isTerminalState( state ) {
 
 // retorna valor de utilidade do estado
 function getUtility( state ) {
-	return getPiecesDiffernce( state );
+	return getPiecesDifference( state );
 
 }
 
-function getPiecesDiffernce( state ) {
+function getPiecesDifference( state ) {
 	var count_diff;
 	for( var i=0; i<state.board.length; i++ ) {
 		for( var j=0; j<state.board.length; j++ ) {
-			if( state.board[i][j] == board.player_turn ) {
+			if( state.board[i][j] == state.player_turn ) {
 				count_diff++;
 			}
-			else if( state.board[i][j] == changePlayerTurn( board.player_turn ) ){
+			else if( state.board[i][j] == changePlayerTurn( state.player_turn ) ){
 				count_diff--;
 			}
 		}
@@ -296,17 +226,19 @@ function getSuccessors( state ) {
 	// var sucessor;
 
 	moves = getPossibleMoves( state.player_turn, state.board );
-	moves.possible_moves;
-	moves.pieces_to_switch;
+	// moves.possible_moves;
+	// moves.pieces_to_switch;
 
 	for( var i=0; i<moves.possible_moves.length; i++ ) {
 		for( var j=0; j<moves.possible_moves.length; j++ ) {
 			if( moves.possible_moves[i][j] == 1 ) {
 				var successor = {}
 				successor.depth = state.depth + 1;
-				successor.bord = switchPieces(i, j, state.player_turn, state.board, moves.pieces_to_switch );
+				successor.board = switchPieces(i, j, state.player_turn, state.board, moves.pieces_to_switch );
+				successor.board[i][j] = state.player_turn;
 				successor.successors = [];
-				successor.utility = 0;
+				successor.utility = -state.utility;
+				// successor.utility = 0;
 				successor.player_turn = changePlayerTurn( state.player_turn );
 				successors.push( successor );
 			}
@@ -521,6 +453,14 @@ function machineTurn( board, player_turn ) {
 	// return switchPieces(move.i, move.j, player_turn, board, pieces_to_switch);
 }
 
+function getBestNextMove(state) {
+	var successors = getSuccessors( state );
+	for(var i=0; i<successors.length; i++) {
+		console.log(successors[i].utility);
+	}
+}
+
+// Função seta variável board global
 function setGlobalBoard(local_board) {
 	board = local_board;
 }
@@ -535,8 +475,6 @@ function getMachineMove( board ) {
 	new_board[move.i][move.j] = P2_TURN;
 	switchPieces(move.i, move.j, player_turn, new_board, moves.pieces_to_switch );
 	// switchPieces(move.i, move.j, player_turn, board, moves.pieces_to_switch );
-
-
 
 	setGlobalBoard(new_board);
 
