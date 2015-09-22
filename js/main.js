@@ -269,7 +269,7 @@ function isTerminalState( state ) {
 function getUtility( state ) {
 	var pieces_difference = getPiecesDifference( state );
 	var corners_difference = getCornersDifference(state);
-	return getPiecesDifference( state ) + 10*corners_difference;
+	return getPiecesDifference( state ) + 20*corners_difference;
 }
 
 function getCornersDifference(state) {
