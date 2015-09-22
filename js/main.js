@@ -113,7 +113,7 @@ function manageScreen() {
 }
 
 function drawScreenStartMenu() {
-	console.log('ok');
+	// console.log('ok');
 	drawScreen();
 
 	// Desenha quadrado com início no ponto (x,y) e de tamanho size. O ponto (x,y) é referente ao canto superior esquerdo do quadrado
@@ -457,8 +457,51 @@ function isTerminalState( state ) {
 // retorna valor de utilidade do estado
 function getUtility( state ) {
 	// alert('getUtility');
-	return getPiecesDifference( state );
+	var pieces_difference = getPiecesDifference( state );
+	var corners_difference = getCornersDifference(state);
+	return getPiecesDifference( state ) + 7*corners_difference;
+}
 
+function getCornersDifference(state) {
+	var p1_corners = 0, p2_corners = 0;
+	var i, j;
+
+	i=0;
+	j=0;
+	if( state.board[i][i] == P1_TURN ) {
+		p1_corners++;
+	}
+	else if( state.board[i][i] == P2_TURN ) {
+		p2_corners++;
+	}
+
+	i=state.board.length-1;
+	j=0;
+	if( state.board[i][i] == P1_TURN ) {
+		p1_corners++;
+	}
+	else if( state.board[i][i] == P2_TURN ) {
+		p2_corners++;
+	}
+
+	i=0;
+	j=state.board.length-1;
+	if( state.board[i][i] == P1_TURN ) {
+		p1_corners++;
+	}
+	else if( state.board[i][i] == P2_TURN ) {
+		p2_corners++;
+	}
+
+	i=state.board.length-1;
+	j=state.board.length-1;
+	if( state.board[i][i] == P1_TURN ) {
+		p1_corners++;
+	}
+	else if( state.board[i][i] == P2_TURN ) {
+		p2_corners++;
+	}
+	return p2_corners - p1_corners;
 }
 
 function getPiecesDifference( state ) {
@@ -610,6 +653,7 @@ function newTurn( player_turn_local, board_local ) {
 			// switchPieces()
 			console.log('OK');
 			player_turn = changePlayerTurn( player_turn_local );
+			// newTurn( player_turn, board ); 
 			setTimeout(function(){ newTurn( player_turn, board); }, 600);
 			// setTimeout(function(){ newTurn( player_turn, board); }, 10);
 			// newTurn();
@@ -683,7 +727,7 @@ function playerTurn() {
 function machineTurn_new( board, player_turn ) {
 	var state = {};
 
-	console.log("machin turn");
+	// console.log("machin turn");
 	state.depth = 0;
 	state.board = board;
 	state.successors = [];
@@ -700,7 +744,7 @@ function machineTurn_new( board, player_turn ) {
 function getBestNextMove(state) {
 	var successors = getSuccessors( state );
 	for(var i=0; i<successors.length; i++) {
-		console.log(successors[i].utility);
+		// console.log(successors[i].utility);
 	}
 }
 
@@ -792,7 +836,7 @@ function getPossibleMoves( player_turn, board ) {
 	}
 
 	// console.log('---- zerando possible_moves ----');
-	print_matrix( moves.possible_moves, boardSize );
+	// print_matrix( moves.possible_moves, boardSize );
 
 	// Itera sobre cada casa e busca movimentos possíveis a partir dela
 	for( i = 0; i < boardSize; i++) {
@@ -1070,7 +1114,7 @@ function searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece, b
 							break;
 						}
 						else {
-							console.log('Erro inesperado - look right-down');
+							// console.log('Erro inesperado - look right-down');
 							alert('Erro inesperado no searchPossibleMoves');
 						}
 					}
@@ -1114,7 +1158,7 @@ function searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece, boar
 							break;
 						}
 						else {
-							console.log('Erro inesperado - look left-up');
+							// console.log('Erro inesperado - look left-up');
 							alert('Erro inesperado no searchPossibleMoves');
 							// alert('Erro inesperado no searchPossibleMoves');
 						}
@@ -1159,7 +1203,7 @@ function searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece, boa
 							break;
 						}
 						else {
-							console.log('Erro inesperado - look right-up');
+							// console.log('Erro inesperado - look right-up');
 							alert('Erro inesperado no searchPossibleMoves');
 							// alert('Erro inesperado no searchPossibleMoves');
 						}
@@ -1203,7 +1247,7 @@ function searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece, bo
 							break;
 						}
 						else {
-							console.log('Erro inesperado - look left-down');
+							// console.log('Erro inesperado - look left-down');
 							alert('Erro inesperado no searchPossibleMoves');
 							// alert('Erro inesperado no searchPossibleMoves');
 						}
@@ -1234,7 +1278,7 @@ function addPiece( event ) {
 	var i, j;
 
 	if( x >= x_offset && x <= ( boardWidth + x_offset) && y >= y_offset && y <= ( boardHeight + y_offset) ) {
-		console.log( 'Posição válida para a peça' );
+		// console.log( 'Posição válida para a peça' );
 		i = parseInt( ( y - y_offset ) / space_size ); // posição horizontal da matriz
 		j = parseInt( ( x - x_offset ) / space_size ); // posiçao vertical da matriz
 
