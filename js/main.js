@@ -179,14 +179,19 @@ function machineTurn( board, player_turn ) {
 function miniMaxDecision(state) {
 	// move receberá o estado retornado de maxValue
 
-	alert('entoru miniMaxDecision');
-	var move = maxValue(state);
-	setGlobalBoard( move.board );	// Seta board global como sendo o estado do tabuleiro referente ao moviemento feito
+	// alert('entrou miniMaxDecision');
+	var final_state = maxValue(state);	// final_state recebe toda a árvore de estados
+	// alert('saiu do miniMaxDecision');
+	// alert(final_state.utility);
+	// alert(final_state.successors.length);
+	var move_state = getMaxUtilitySuccessor(final_state.successors); // move_state recebe o sucessor imediado do estado com maior valor de utilidade
+	// printStateBoard(move_state);
+	setGlobalBoard( move_state.board );	// Seta board global como sendo o estado do tabuleiro referente ao moviemento feito
 }
 
 // Retorna um estado
 function maxValue(state) {
-	var successors;
+	var successors, maxUtility, next_state;
 	// alert( "maxValue\n" +printState(state) + "\n" + printStateBoard(state) );
 	// alert('entoru maxValue');
 	if( isTerminalState( state ) ) {
@@ -196,18 +201,26 @@ function maxValue(state) {
 		return state;
 	}
 	state.utility = -INFINITY;
+	maxUtility = -INFINITY;
 	// printState(state);
-	successors = getSuccessors(state);
+	state.successors = getSuccessors(state);
 	// alert('maxValue - depois getSuccessors');
-	for(var i=0; i<successors.length; i++) {
-		state = getMaxUtilityState(state, minValue(successors[i]));
+	for(var i=0; i<state.successors.length; i++) {
+		// state = getMaxUtilityState(state, minValue(successors[i]));
+		// state.utility = maxUtility;
+		// maxUtility = getMaxUtility(state, minValue(successors[i]));
+		next_state = minValue(state.successors[i]);
+		maxUtility = Math.max(maxUtility, next_state.utility);
+		
+		// state.utility = v.utility;
 	}
+	state.utility = maxUtility;
 	return state;
 }
 
 // Retorna um estado
 function minValue(state) {
-	var successors;
+	var successors, minUtility, next_state;
 	// printStateBoard(state, "minValue");
 	// alert( "minValue\n" + printStateBoard(state) );
 	// alert( "minValue\n" +printState(state) + "\n" + printStateBoard(state) );
@@ -217,12 +230,19 @@ function minValue(state) {
 		return state;
 	}
 	state.utility = INFINITY;
+	minUtility = INFINITY;
 	// alert('minValue - antes getSuccessors');
-	successors = getSuccessors(state);
+	state.successors = getSuccessors(state);
 	// alert('minValue - depois getSuccessors');
-	for(var i=0; i<successors.length; i++) {
-		state = getMinUtilityState( state, maxValue(successors[i]) );
+	for(var i=0; i<state.successors.length; i++) { 
+		// state = getMinUtilityState( state, maxValue(successors[i]) );
+		next_state = maxValue(state.successors[i]);
+		minUtility = Math.min(minUtility, next_state.utility);
+
+		// v = getMinUtilityState( state, maxValue(successors[i]) );
+		// state.utility = v.utility;
 	}
+	state.utility = minUtility;
 	return state;
 
 
@@ -237,6 +257,15 @@ function getMinUtilityState( state1, state2 ) {
 	}
 }
 
+function getMinUtility( state1, state2 ) {
+	if(state1.utility <= state2.utility) {
+		return state1.utility;
+	}
+	else {
+		return state2.utility;
+	}
+}
+
 function getMaxUtilityState( state1, state2 ) {
 	if(state1.utility <= state2.utility) {
 		return state2;
@@ -246,15 +275,114 @@ function getMaxUtilityState( state1, state2 ) {
 	}
 }
 
+// Função retorna o stado com maior valor de utilidade
+function getMaxUtilitySuccessor(successors) {
+	var successor = successors[0];
+	for(var i=1; i<successors.length; i++) {
+		if( successors[i].utility > successor.utility ) {
+			successor = successors[i];
+		}
+	}
+	return successor;
+}
+
+
+
+function getSuccessors(state) {
+	var successors = [];
+	var s, new_depth, new_utility, new_successors, new_board, new_player_turn; 
+	var state_board = state.board;
+	var state_clone;
+
+	new_depth = state.depth + 1;
+	new_successors = [];
+	new_utility = -state.utility;
+	new_player_turn = changePlayerTurn( state.player_turn );
+	var moves = getPossibleMoves( state.player_turn, state.board );
+
+
+	// var current_board = state.board.prototype;
+
+	// var current_state = {};
+	// current_state.prototype = state;
+	// current_state.prototype.switchPieces = function(i, j, player_turn, board, pieces_to_switch ) {
+	// 	var piece, to_switch;
+	// 	to_switch = pieces_to_switch[i][j]
+	// 	for(var k=0; k<to_switch.length; k++) {
+	// 		piece = to_switch[k];
+	// 		board[piece.i][piece.j] = player_turn ;
+	// 	}
+	// 	board[i][j] = player_turn;
+	// 	return board;
+	// };
+	
+	// current_state.prototype.board = state.board;
+	// console.log(current_board);
+	
+	var test_state = $.extend( {}, state);
+	for( var i=0; i<moves.possible_moves.length; i++ ) {
+		for( var j=0; j<moves.possible_moves.length; j++ ) {
+			if( moves.possible_moves[i][j] == 1 ) {
+				// state_clone = clone(state);
+				test_state = $.extend(true, {}, state);
+				new_board = switchPieces(i, j, state.player_turn, test_state.board, moves.pieces_to_switch );
+				// new_board = switchPieces(i, j, state.player_turn, current_state.prototype.board, moves.pieces_to_switch );
+				// new_board = current_state.prototype.switchPieces(i, j, state.player_turn, current_state.prototype.board, moves.pieces_to_switch );
+				// current_state = Object.create(state);
+				s = {};
+				s.depth = new_depth;
+				s.board = new_board;
+				s.successors = new_successors;
+				s.utility = new_utility;
+				s.player_turn = new_player_turn;
+				// successors.push()
+				// successors[successors.length] = s;
+				successors.push(s);
+				// Array.prototype.push.apply(successors, s);
+			}
+		}
+	}
+	// state.board = current_board;
+	return successors;
+}
+
+
+
+
+
+function clone(obj) {
+    if (null == obj || "object" != typeof obj) {
+    	return obj;
+    }
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
+}
+
+function my_clone( obj ) {
+	var new_obj = {}
+	for(var key in obj) {
+		new_obj[key] = obj[key];
+	}
+	return new_obj;
+}
+
+
+
+
+
 // retorna array com os estados sucessores do estado passado como parâmetro
 	// state.depth = 0;
 	// state.board = board;
 	// state.successors = [];
 	// state.utility = 0;
 	// state.player_turn = player_turn;
-function getSuccessors( state ) {
-	var board, moves, next_move_player;
+function getSuccessors_old( state ) {
+	var moves, next_move_player; //, board_local,;
 	var successors = [];
+	var initial_board = state.board;
 
 	next_move_player = changePlayerTurn( state.player_turn );
 	// alert("player_turn: " + state.player_turn + "; Next move player: " + next_move_player);
@@ -279,13 +407,15 @@ function getSuccessors( state ) {
 				// alert("player_turn aqui: " + successor.player_turn );
 				// // alert( "creating new successor\n" +printState(state) + "\n" + printStateBoard(state) );
 				// successors.push( successor );
-				board = switchPieces(i, j, state.player_turn, state.board, moves.pieces_to_switch );
-				board[i][j] = state.player_turn;
+				// var board_local = [];
+				// board_local = switchPieces(i, j, state.player_turn, state.board, moves.pieces_to_switch );
+				// board_local[i][j] = state.player_turn;
 				successors.push( {				
 									depth: state.depth + 1,
-									board: board,
+									// board: board_local,
+									board: switchPieces(i, j, state.player_turn, state.board, moves.pieces_to_switch ),
 									successors: [],
-									utility: -state.utility,
+									utility: state.utility,
 									player_turn: next_move_player
 									// player_turn: changePlayerTurn( state.player_turn )
 								});
@@ -336,10 +466,12 @@ function getPiecesDifference( state ) {
 	// alert('getPiecesDifference - inicio');
 	for( var i=0; i<state.board.length; i++ ) {
 		for( var j=0; j<state.board.length; j++ ) {
-			if( state.board[i][j] == state.player_turn ) {
+			// if( state.board[i][j] == state.player_turn ) {
+			if( state.board[i][j] == P2_TURN ) {
 				count_diff++;
 			}
-			else if( state.board[i][j] == changePlayerTurn( state.player_turn ) ){
+			// else if( state.board[i][j] == changePlayerTurn( state.player_turn ) ){
+			else if( state.board[i][j] == P1_TURN ){
 				count_diff--;
 			}
 		}
@@ -366,28 +498,39 @@ function printState(state) {
 	return s;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function switchPieces(i_clicked, j_clicked, player_turn, board, pieces_to_switch ) {
-	var piece;
-	for(var k=0; k<pieces_to_switch[i_clicked][j_clicked].length; k++) {
-		piece = pieces_to_switch[i_clicked][j_clicked][k];
+function switchPieces(i, j, player_turn, board, pieces_to_switch ) {
+	var piece, to_switch;
+	to_switch = pieces_to_switch[i][j]
+	for(var k=0; k<to_switch.length; k++) {
+		piece = to_switch[k];
 		board[piece.i][piece.j] = player_turn ;
 	}
+	board[i][j] = player_turn;
 	return board;
 }
+
+
+// function switchPieces(i, j, player_turn, board, pieces_to_switch ) {
+// 	var current_board = {};
+// 	current_board.prototype = board;
+// 	var piece, to_switch;
+// 	to_switch = pieces_to_switch[i][j]
+// 	for(var k=0; k<to_switch.length; k++) {
+// 		piece = to_switch[k];
+// 		current_board.prototype[piece.i][piece.j] = player_turn ;
+// 	}
+// 	current_board.prototype[i][j] = player_turn;
+// 	return current_board.prototype;
+// }
+
+// function switchPieces(i_clicked, j_clicked, player_turn, board, pieces_to_switch ) {
+// 	var piece, new_board = board;
+// 	for(var k=0; k<pieces_to_switch[i_clicked][j_clicked].length; k++) {
+// 		piece = pieces_to_switch[i_clicked][j_clicked][k];
+// 		new_board[piece.i][piece.j] = player_turn ;
+// 	}
+// 	return new_board;
+// }
 
 // Função chamada quando houer um clique dentro do canvas
 //	 	Constantes usadas:
@@ -648,7 +791,7 @@ function getPossibleMoves( player_turn, board ) {
 		}
 	}
 
-	console.log('---- zerando possible_moves ----');
+	// console.log('---- zerando possible_moves ----');
 	print_matrix( moves.possible_moves, boardSize );
 
 	// Itera sobre cada casa e busca movimentos possíveis a partir dela
@@ -703,7 +846,7 @@ function searchPossibleMoves( player_turn, i_piece, j_piece, board, moves ) {
 	// left-up parece estar ok
 	// left-down parece estar ok
 
-	console.log('--------------------------------');
+	// console.log('--------------------------------');
 	return moves;
 	// possible_moves[i_piece][j_piece] = 1;
 }
