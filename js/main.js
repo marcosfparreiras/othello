@@ -60,6 +60,9 @@ var IN_BOARD_VALID = 1;
 var IN_BOARD_INVALID = 2;
 var OUT_BOARD = 3;
 
+// Define profundidade do mini max
+var MINI_MAX_DEPTH = 3;
+
 // Matriz com possíveis movimentos do jogador da vez. 1 indica que aquele movimento é possível
 var possible_moves;
 
@@ -87,6 +90,7 @@ var j_test = 0;
 // 		depth
 // 		successors
 // 		utility
+// 		player_turn
 
 // --------------Fim da definição das variáveis globais ----------
 
@@ -136,25 +140,17 @@ function drawScreenStartMenu() {
 function initializeGame() {
 	pos_clicked = {i: 0, j:0};
 	board = initializeBoard();
-	// initializePossibleMoves();
-	// initializePiecesToSwitch();
 
 	moves = getPossibleMoves( player_turn, board );
 	possible_moves = moves.possible_moves;
 	pieces_to_switch = moves.pieces_to_switch;
 
 	player_turn = P1_TURN;
-	// drawCanvas( board, possible_moves );
 	newTurn( player_turn, board );	// inicializa turno com jogador e tabuleiro
 }
 
 // Função executa turno de jogada da máquina
 function machineTurn( board, player_turn ) {
-	// var move;
-	// alert('Turno da máquina');
-	// move = getMachineMove( board );
-	// board[move.i][move.j] = player_turn;
-
 	var machine_move;
 	var state = {};
 
@@ -163,56 +159,32 @@ function machineTurn( board, player_turn ) {
 	state.successors = [];
 	state.utility = 0;
 	state.player_turn = player_turn;
-	// getBestNextMove(state);
 
-	// printState(state);
 	miniMaxDecision(state);
-	// machine_move = getMachineMove(board);
-	// return alphaBetaSearch( state );
-	// return getMachineMove(board);
-	// return switchPieces(move.i, move.j, player_turn, board, pieces_to_switch);
+
 }
-
-
 
 // retorna board, possible_moves e pieces_to_switch 
 function miniMaxDecision(state) {
 	// move receberá o estado retornado de maxValue
-
-	// alert('entrou miniMaxDecision');
 	var final_state = maxValue(state);	// final_state recebe toda a árvore de estados
-	// alert('saiu do miniMaxDecision');
-	// alert(final_state.utility);
-	// alert(final_state.successors.length);
 	var move_state = getMaxUtilitySuccessor(final_state.successors); // move_state recebe o sucessor imediado do estado com maior valor de utilidade
-	// printStateBoard(move_state);
 	setGlobalBoard( move_state.board );	// Seta board global como sendo o estado do tabuleiro referente ao moviemento feito
 }
 
 // Retorna um estado
 function maxValue(state) {
 	var successors, maxUtility, next_state;
-	// alert( "maxValue\n" +printState(state) + "\n" + printStateBoard(state) );
-	// alert('entoru maxValue');
 	if( isTerminalState( state ) ) {
-		// alert('maxValue - TerminalState');
 		state.utility = getUtility( state );
-		// alert('utility: ' + state.utility)
 		return state;
 	}
 	state.utility = -INFINITY;
 	maxUtility = -INFINITY;
-	// printState(state);
 	state.successors = getSuccessors(state);
-	// alert('maxValue - depois getSuccessors');
 	for(var i=0; i<state.successors.length; i++) {
-		// state = getMaxUtilityState(state, minValue(successors[i]));
-		// state.utility = maxUtility;
-		// maxUtility = getMaxUtility(state, minValue(successors[i]));
 		next_state = minValue(state.successors[i]);
 		maxUtility = Math.max(maxUtility, next_state.utility);
-		
-		// state.utility = v.utility;
 	}
 	state.utility = maxUtility;
 	return state;
@@ -221,58 +193,21 @@ function maxValue(state) {
 // Retorna um estado
 function minValue(state) {
 	var successors, minUtility, next_state;
-	// printStateBoard(state, "minValue");
-	// alert( "minValue\n" + printStateBoard(state) );
-	// alert( "minValue\n" +printState(state) + "\n" + printStateBoard(state) );
 	if( isTerminalState( state ) ) {
-		// alert('minValue - TerminalState');
 		state.utility = getUtility( state );
 		return state;
 	}
 	state.utility = INFINITY;
 	minUtility = INFINITY;
-	// alert('minValue - antes getSuccessors');
 	state.successors = getSuccessors(state);
-	// alert('minValue - depois getSuccessors');
 	for(var i=0; i<state.successors.length; i++) { 
-		// state = getMinUtilityState( state, maxValue(successors[i]) );
 		next_state = maxValue(state.successors[i]);
 		minUtility = Math.min(minUtility, next_state.utility);
-
-		// v = getMinUtilityState( state, maxValue(successors[i]) );
-		// state.utility = v.utility;
 	}
 	state.utility = minUtility;
 	return state;
 
 
-}
-
-function getMinUtilityState( state1, state2 ) {
-	if(state1.utility <= state2.utility) {
-		return state1;
-	}
-	else {
-		return state2;
-	}
-}
-
-function getMinUtility( state1, state2 ) {
-	if(state1.utility <= state2.utility) {
-		return state1.utility;
-	}
-	else {
-		return state2.utility;
-	}
-}
-
-function getMaxUtilityState( state1, state2 ) {
-	if(state1.utility <= state2.utility) {
-		return state2;
-	}
-	else {
-		return state1;
-	}
 }
 
 // Função retorna o stado com maior valor de utilidade
@@ -286,8 +221,6 @@ function getMaxUtilitySuccessor(successors) {
 	return successor;
 }
 
-
-
 function getSuccessors(state) {
 	var successors = [];
 	var s, new_depth, new_utility, new_successors, new_board, new_player_turn; 
@@ -299,156 +232,34 @@ function getSuccessors(state) {
 	new_utility = -state.utility;
 	new_player_turn = changePlayerTurn( state.player_turn );
 	var moves = getPossibleMoves( state.player_turn, state.board );
-
-
-	// var current_board = state.board.prototype;
-
-	// var current_state = {};
-	// current_state.prototype = state;
-	// current_state.prototype.switchPieces = function(i, j, player_turn, board, pieces_to_switch ) {
-	// 	var piece, to_switch;
-	// 	to_switch = pieces_to_switch[i][j]
-	// 	for(var k=0; k<to_switch.length; k++) {
-	// 		piece = to_switch[k];
-	// 		board[piece.i][piece.j] = player_turn ;
-	// 	}
-	// 	board[i][j] = player_turn;
-	// 	return board;
-	// };
-	
-	// current_state.prototype.board = state.board;
-	// console.log(current_board);
 	
 	var test_state = $.extend( {}, state);
 	for( var i=0; i<moves.possible_moves.length; i++ ) {
 		for( var j=0; j<moves.possible_moves.length; j++ ) {
 			if( moves.possible_moves[i][j] == 1 ) {
-				// state_clone = clone(state);
 				test_state = $.extend(true, {}, state);
 				new_board = switchPieces(i, j, state.player_turn, test_state.board, moves.pieces_to_switch );
-				// new_board = switchPieces(i, j, state.player_turn, current_state.prototype.board, moves.pieces_to_switch );
-				// new_board = current_state.prototype.switchPieces(i, j, state.player_turn, current_state.prototype.board, moves.pieces_to_switch );
-				// current_state = Object.create(state);
 				s = {};
 				s.depth = new_depth;
 				s.board = new_board;
 				s.successors = new_successors;
 				s.utility = new_utility;
 				s.player_turn = new_player_turn;
-				// successors.push()
-				// successors[successors.length] = s;
 				successors.push(s);
-				// Array.prototype.push.apply(successors, s);
 			}
 		}
 	}
-	// state.board = current_board;
 	return successors;
 }
-
-
-
-
-
-function clone(obj) {
-    if (null == obj || "object" != typeof obj) {
-    	return obj;
-    }
-    var copy = obj.constructor();
-    for (var attr in obj) {
-        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
-    }
-    return copy;
-}
-
-function my_clone( obj ) {
-	var new_obj = {}
-	for(var key in obj) {
-		new_obj[key] = obj[key];
-	}
-	return new_obj;
-}
-
-
-
-
-
-// retorna array com os estados sucessores do estado passado como parâmetro
-	// state.depth = 0;
-	// state.board = board;
-	// state.successors = [];
-	// state.utility = 0;
-	// state.player_turn = player_turn;
-function getSuccessors_old( state ) {
-	var moves, next_move_player; //, board_local,;
-	var successors = [];
-	var initial_board = state.board;
-
-	next_move_player = changePlayerTurn( state.player_turn );
-	// alert("player_turn: " + state.player_turn + "; Next move player: " + next_move_player);
-	// printState(state);
-	// var sucessor;
-	moves = getPossibleMoves( state.player_turn, state.board );
-	// moves.possible_moves;
-	// moves.pieces_to_switch;
-
-	for( var i=0; i<moves.possible_moves.length; i++ ) {
-		// alert('ok');
-		for( var j=0; j<moves.possible_moves.length; j++ ) {
-			// alert(i + '-' + j);
-			if( moves.possible_moves[i][j] == 1 ) {
-				// var successor = {}
-				// successor.depth = state.depth + 1;
-				// successor.board = switchPieces(i, j, state.player_turn, state.board, moves.pieces_to_switch );
-				// successor.board[i][j] = state.player_turn;
-				// successor.successors = [];
-				// successor.utility = -state.utility;
-				// successor.player_turn = changePlayerTurn( state.player_turn );
-				// alert("player_turn aqui: " + successor.player_turn );
-				// // alert( "creating new successor\n" +printState(state) + "\n" + printStateBoard(state) );
-				// successors.push( successor );
-				// var board_local = [];
-				// board_local = switchPieces(i, j, state.player_turn, state.board, moves.pieces_to_switch );
-				// board_local[i][j] = state.player_turn;
-				successors.push( {				
-									depth: state.depth + 1,
-									// board: board_local,
-									board: switchPieces(i, j, state.player_turn, state.board, moves.pieces_to_switch ),
-									successors: [],
-									utility: state.utility,
-									player_turn: next_move_player
-									// player_turn: changePlayerTurn( state.player_turn )
-								});
-			}
-		}
-	}
-	// alert( "player_turn para o primeiro sucessor: " +  successors[0].player_turn );
-	// Imprime cada um dos estados sucessores
-	// for(var i=0; i<successors.length; i++) {
-	// 	printState(successors[i]);
-	// }
-	return successors;
-// switchPieces(i_clicked, j_clicked, player_turn, board, pieces_to_switch ) {
-}
-
-
-
-// }
-
 
 
 // retorna true se estado for terminal e false caso contrário
 function isTerminalState( state ) {
 	// Se o jogo terminar, retorna true (tabuleiro cheio ou ausência de jogadas para ambos os jogadores)
 	if( gameOver( state.player_turn, state.board ) ) {
-		// alert("Game Over");
 		return true;
 	}
-	// Adicionar verificação de ausência de movimento para os dois lados
-	if( state.depth >= 3 ) {
-		// alert("Depth reached");
-		// printStateBoard(state, "terminalState");
-		// alert( "terminalState\n" + printStateBoard(state) );
+	if( state.depth >= MINI_MAX_DEPTH ) {
 		return true;
 	}
 	return false;
@@ -456,10 +267,9 @@ function isTerminalState( state ) {
 
 // retorna valor de utilidade do estado
 function getUtility( state ) {
-	// alert('getUtility');
 	var pieces_difference = getPiecesDifference( state );
 	var corners_difference = getCornersDifference(state);
-	return getPiecesDifference( state ) + 7*corners_difference;
+	return getPiecesDifference( state ) + 10*corners_difference;
 }
 
 function getCornersDifference(state) {
@@ -506,39 +316,17 @@ function getCornersDifference(state) {
 
 function getPiecesDifference( state ) {
 	var count_diff = 0;
-	// alert('getPiecesDifference - inicio');
 	for( var i=0; i<state.board.length; i++ ) {
 		for( var j=0; j<state.board.length; j++ ) {
-			// if( state.board[i][j] == state.player_turn ) {
 			if( state.board[i][j] == P2_TURN ) {
 				count_diff++;
 			}
-			// else if( state.board[i][j] == changePlayerTurn( state.player_turn ) ){
 			else if( state.board[i][j] == P1_TURN ){
 				count_diff--;
 			}
 		}
 	}
-	// alert('getPiecesDifference - final');
 	return count_diff;
-}
-
-function printStateBoard(state) {
-	var s = "";
-	for(var i=0; i<state.board.length; i++) {
-		for(var j=0; j<state.board.length; j++) {
-			s += state.board[i][j];
-		}
-		s += "\n"
-	}
-	// alert(s);
-	return s;
-}
-
-function printState(state) {
-	var s = "Depth: " + state.depth + "\nUtility: " + state.utility + "\nPlayerTurn: " + state.player_turn;
-	// alert(s);
-	return s;
 }
 
 function switchPieces(i, j, player_turn, board, pieces_to_switch ) {
@@ -551,29 +339,6 @@ function switchPieces(i, j, player_turn, board, pieces_to_switch ) {
 	board[i][j] = player_turn;
 	return board;
 }
-
-
-// function switchPieces(i, j, player_turn, board, pieces_to_switch ) {
-// 	var current_board = {};
-// 	current_board.prototype = board;
-// 	var piece, to_switch;
-// 	to_switch = pieces_to_switch[i][j]
-// 	for(var k=0; k<to_switch.length; k++) {
-// 		piece = to_switch[k];
-// 		current_board.prototype[piece.i][piece.j] = player_turn ;
-// 	}
-// 	current_board.prototype[i][j] = player_turn;
-// 	return current_board.prototype;
-// }
-
-// function switchPieces(i_clicked, j_clicked, player_turn, board, pieces_to_switch ) {
-// 	var piece, new_board = board;
-// 	for(var k=0; k<pieces_to_switch[i_clicked][j_clicked].length; k++) {
-// 		piece = pieces_to_switch[i_clicked][j_clicked][k];
-// 		new_board[piece.i][piece.j] = player_turn ;
-// 	}
-// 	return new_board;
-// }
 
 // Função chamada quando houer um clique dentro do canvas
 //	 	Constantes usadas:
@@ -594,28 +359,17 @@ function getMouseClick( event ) {
 	if( addPiece( event ) == IN_BOARD_VALID ) {
 		add_piece_ok_sound.play();
 		board  = switchPieces(pos_clicked.i, pos_clicked.j, player_turn, board, pieces_to_switch );
-		// printPiecesToSwitch();
-		// alert(pos_clicked.i + ', ' + pos_clicked.j);
-		// document.getElementById('add_piece_ok').play();
 		player_turn = changePlayerTurn( player_turn );
-		// drawCanvas();
+
 		newTurn( player_turn, board );
 	}
 	else if( addPiece( event ) == IN_BOARD_INVALID ) {
 		add_piece_error_sound.play();
-		// document.getElementById('add_piece_error').play();
 	}
 }
 
 
 function newTurn( player_turn_local, board_local ) {
-	// console.log('board')
-	// print_matrix( board, boardSize );
-	// console.log('------------------------------')
-	// console.log('possible_moves')
-	// print_matrix( possible_moves, boardSize);
-	// console.log('------------------------------')
-
 	// Verifica se jogo terminou (tabuleiro cheio ou ausência de jogadas)
 	if( gameOver( player_turn_local, board_local ) ) {
 		drawCanvas( board_local, possible_moves );
@@ -628,11 +382,7 @@ function newTurn( player_turn_local, board_local ) {
 			alert('Nenhuma jogada possível. Jogador ' + player_turn_local + ' perdeu a vez');
 			newTurn( player_turn, board);
 		}
-		// else {	// Fim de jogo
-		// 	drawCanvas( board_local, possible_moves );
-		// 	alert( getEndOfGameMessage() );
-		// }
-	}
+		}
 
 	// Atualiza configuração de tabuleiro e possibilidades de movimento para o jogador do turno
 	var moves = getPossibleMoves( player_turn_local, board_local );
@@ -649,14 +399,9 @@ function newTurn( player_turn_local, board_local ) {
 		}
 		else if( player_turn_local == P2_TURN ) {
 			machineTurn( board_local, player_turn_local );
-			// board = machineTurn( board_local );
-			// switchPieces()
 			console.log('OK');
 			player_turn = changePlayerTurn( player_turn_local );
-			// newTurn( player_turn, board ); 
 			setTimeout(function(){ newTurn( player_turn, board); }, 600);
-			// setTimeout(function(){ newTurn( player_turn, board); }, 10);
-			// newTurn();
 		}
 	}
 	if( game_mode == GAME_PVP ) {
@@ -667,7 +412,6 @@ function newTurn( player_turn_local, board_local ) {
 function getEndOfGameMessage() {
 	var text_end = "Fim de jogo. ";
 	var score = getScore();
-	// alert("Fim de jogo");
 	if( score.p1 > score.p2 ) {
 		text_end += "Vitória do player 1";
 	}
@@ -713,75 +457,15 @@ function gameOver( player, board ) {
 	}
 	if( !hasPossibleMoves(player_turn, board) ) {
 		if( !hasPossibleMoves( changePlayerTurn( player_turn ), board) ) {
-			// alert("No moves alowed");
 			return true;
 		}
 	}
 	return false;
 }
 
-function playerTurn() {
-
-}
-
-function machineTurn_new( board, player_turn ) {
-	var state = {};
-
-	// console.log("machin turn");
-	state.depth = 0;
-	state.board = board;
-	state.successors = [];
-	state.utility = 0;
-	state.player_turn = player_turn;
-	getBestNextMove(state);
-
-}
-
-
-
-
-
-function getBestNextMove(state) {
-	var successors = getSuccessors( state );
-	for(var i=0; i<successors.length; i++) {
-		// console.log(successors[i].utility);
-	}
-}
-
 // Função seta variável board global
 function setGlobalBoard(local_board) {
 	board = local_board;
-}
-
-function getMachineMove( board ) {
-	var moves = getPossibleMoves( P2_TURN, board )
-	var move = getRandomMove( moves.possible_moves );
-
-	// var new_board = switchPieces(move.i, move.j, player_turn, board, moves.pieces_to_switch[move.i][move.j] );
-	
-	var new_board = board;
-	new_board[move.i][move.j] = P2_TURN;
-	switchPieces(move.i, move.j, player_turn, new_board, moves.pieces_to_switch );
-	// switchPieces(move.i, move.j, player_turn, board, moves.pieces_to_switch );
-
-	setGlobalBoard(new_board);
-
-	// alert('i: ' +move.i + ', j: ' +move.j);
-	return move;
-
-}
-
-function getRandomMove( possible_moves ) {
-	for( var i=0; i<boardSize; i++ ) {
-		for( var j=0; j<boardSize; j++ ) {
-			if( possible_moves[i][j] == 1 ) {
-				return {
-					i: i,
-					j: j
-				};
-			}
-		}
-	}
 }
 
 // Troca o turno, passando a vez para o outro jogador
@@ -797,8 +481,6 @@ function changePlayerTurn( player_turn ) {
 	}
 }
 
-
-
 // Define movimentos possíveis para o jogador da rodada
 // retorn:
 // 		moves.possible_moves, que é uma matriz com os possíveis movimentos
@@ -808,11 +490,6 @@ function getPossibleMoves( player_turn, board ) {
 	var boardSize = board.length;
 	// Define todas as posições de possible_moves como zero
 	var moves = {};
-	// for( i = 0; i < boardSize; i++) {
-	// 	for( j = 0; j < boardSize; j++) {
-	// 		possible_moves[i][j] = 0;
-	// 	}
-	// }
 	moves.pieces_to_switch = new Array(boardSize);
 	for (var i = 0; i < boardSize; i++) {
 		moves.pieces_to_switch[i] = new Array(boardSize);
@@ -822,7 +499,6 @@ function getPossibleMoves( player_turn, board ) {
 			moves.pieces_to_switch[i][j] = new Array();
 		}
 	}
-
 
 	// inicializa possible_movies
 	moves.possible_moves = new Array(boardSize);
@@ -835,25 +511,16 @@ function getPossibleMoves( player_turn, board ) {
 		}
 	}
 
-	// console.log('---- zerando possible_moves ----');
-	// print_matrix( moves.possible_moves, boardSize );
-
 	// Itera sobre cada casa e busca movimentos possíveis a partir dela
 	for( i = 0; i < boardSize; i++) {
 		for( j = 0; j < boardSize; j++) {
 			if( board[i][j] == player_turn ) {
-				// possible_moves[i][j+1] = 1;
 				moves = searchPossibleMoves( player_turn, i, j, board, moves);
-				// possible_moves[i][j] = 1;
 			}
 		}
 	}
 	return moves;
 }
-
-
-
-
 
 // moves: hash com .possible_moves e .pieces_to_switch
 function searchPossibleMoves( player_turn, i_piece, j_piece, board, moves ) {
@@ -867,12 +534,6 @@ function searchPossibleMoves( player_turn, i_piece, j_piece, board, moves ) {
 		opponent = P1_TURN;
 	}
 
-	// console.log('--------------------------------');
-	// console.log('Peça - i: ' + i_piece + ', j: ' + j_piece );
-
-	// inicializa pieces_to_switch
-
-
 	// Movimentos horizontais e verticais
 	moves = searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, board, moves );
 	moves = searchPossibleMovesLookRight( player, opponent, i_piece, j_piece, board, moves );
@@ -884,58 +545,33 @@ function searchPossibleMoves( player_turn, i_piece, j_piece, board, moves ) {
 	moves = searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece, board, moves );
 	moves = searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece, board, moves );
 
-	// aparentemente tudo certo com os movimentos verticais e horizontais
-	// left-down parece estar ok
-	// right-down parece estar ok
-	// left-up parece estar ok
-	// left-down parece estar ok
-
-	// console.log('--------------------------------');
 	return moves;
-	// possible_moves[i_piece][j_piece] = 1;
 }
 
 function searchPossibleMovesLookRight( player, opponent, i_piece, j_piece, board, moves ) {
 	var j;
-	// pieces_to_switch[0][0].push( { i: 1, j: 1} );
 	changeable_pieces = new Array();
-	// console.log('Pre look-rigt');
 	if( j_piece <= boardSize ) {
-		// console.log('Entrou look-rigt');
-		// console.log('got: ' + board[i_piece][j_piece+1]);
-		// console.log('got: ' + board[i_piece][j_piece+1]);
-		// console.log('player_turn: ' + player);
-		// console.log('opponent: ' + opponent);
 		if (typeof board[i_piece] != 'undefined') {
 			if (typeof board[i_piece][j_piece+1] != 'undefined') {
 				if( board[i_piece][j_piece+1] == opponent ) {
 					changeable_pieces.push( { i: i_piece, j: j_piece+1} );
-					// changeable_pieces.push( { i: i_piece, j: j_piece+1} );
-					// console.log('Entrou DEEP look-rigt');
-					// console.log('encontrou oponente à esquerda');
 					for( j=j_piece+2; j<boardSize; j++ ) {
-						// console.log('no for');
 						if (typeof board[i_piece][j] == 'undefined') {
 							break;
 						}
 						if( board[i_piece][j] == opponent ) {
-							// console.log('opponent');
 							changeable_pieces.push( {i: i_piece, j: j} );
 							continue;
 						}
 						else if( board[i_piece][j] == player ) {
-							// console.log('player');
 							break;
 						}
 						else if (board[i_piece][j] == 0 ) {
 							moves.possible_moves[i_piece][j] = 1;
-							// if( pieces_to_switch[i_piece][j] )
-							// pieces_to_switch[i_piece][j] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
 								Array.prototype.push.apply(moves.pieces_to_switch[i_piece][j], changeable_pieces);
 							}
-							// printPiecesToSwitch();
-							// console.log('adicionou');
 							break;
 						}
 						else {
@@ -953,12 +589,10 @@ function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, board,
 	var j;
 	var changeable_pieces = new Array();
 	if( j_piece >= 1 ) {
-		// console.log('Entrou look-left');
 		if (typeof board[i_piece] != 'undefined') {
 			if (typeof board[i_piece][j_piece-1] != 'undefined') {
 				if( board[i_piece][j_piece-1] == opponent ) {
 					changeable_pieces.push( { i: i_piece, j: j_piece-1} );
-					// console.log('Entrou DEEP look-left');
 					for( j=j_piece-2; j>=0; j--) {
 						if (typeof board[i_piece][j] == 'undefined') {
 							break;
@@ -972,11 +606,9 @@ function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, board,
 						}
 						else if (board[i_piece][j] == 0 ) {
 							moves.possible_moves[i_piece][j] = 1;
-							// pieces_to_switch[i_piece][j] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
 								Array.prototype.push.apply(moves.pieces_to_switch[i_piece][j], changeable_pieces);
 							}
-							// printPiecesToSwitch();
 							break;
 						}
 						else {
@@ -992,15 +624,12 @@ function searchPossibleMovesLookLeft( player, opponent, i_piece, j_piece, board,
 
 function searchPossibleMovesLookUp( player, opponent, i_piece, j_piece, board, moves ) {
 	var i;
-	// console.log('Pre look-up');
 	var changeable_pieces = new Array();
 	if( i_piece >= 1 ) {
-		// console.log('Entrou look-up');
 		if (typeof board[i_piece-1] != 'undefined') {
 			if (typeof board[i_piece-1][j_piece] != 'undefined') {
 				if( board[i_piece-1][j_piece] == opponent ) {
 					changeable_pieces.push( { i: i_piece-1, j: j_piece} );
-					// console.log('Entrou DEEP look-up');
 					for( i=i_piece-2; i>=0; i--) {
 						if (typeof board[i][j_piece] == 'undefined') {
 							break;
@@ -1014,11 +643,9 @@ function searchPossibleMovesLookUp( player, opponent, i_piece, j_piece, board, m
 						}
 						else if ( board[i][j_piece] == 0 ) {
 							moves.possible_moves[i][j_piece] = 1;
-							// pieces_to_switch[i][j_piece] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
 								Array.prototype.push.apply(moves.pieces_to_switch[i][j_piece], changeable_pieces);
 							}
-							// printPiecesToSwitch();
 							break;
 						}
 						else {
@@ -1035,7 +662,6 @@ function searchPossibleMovesLookUp( player, opponent, i_piece, j_piece, board, m
 function searchPossibleMovesLookDown( player, opponent, i_piece, j_piece, board, moves ) {
 	var i;
 	var changeable_pieces = new Array();
-	// print_matrix(board, boardSize);
 	if( i_piece <= boardSize-1 ) {
 		if (typeof board[i_piece+1] != 'undefined' ) {
 			if( typeof board[i_piece+1][j_piece] != 'undefined') {	// verifica se array na posição board[i_piece + 1] está definido. Se não estiver, não prossegue
@@ -1045,24 +671,18 @@ function searchPossibleMovesLookDown( player, opponent, i_piece, j_piece, board,
 						if (typeof board[i][j_piece] == 'undefined') {
 							break;
 						}
-						// console.log('no for');
 						if( board[i][j_piece] == opponent ) {
-							// console.log('opponent');
 							changeable_pieces.push( {i: i, j: j_piece} );
 							continue;
 						}
 						else if( board[i][j_piece] == player ) {
-							// console.log('player');
 							break;
 						}
 						else if (board[i][j_piece] == 0 ) {
 							moves.possible_moves[i][j_piece] = 1;
-							// pieces_to_switch[i][j_piece] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
 								Array.prototype.push.apply(moves.pieces_to_switch[i][j_piece], changeable_pieces);
 							}
-							// printPiecesToSwitch();
-							// console.log('adicionou');
 							break;
 						}
 						else {
@@ -1081,22 +701,15 @@ function searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece, b
 	// look right-down
 	var i, j;
 	var changeable_pieces = new Array();
-	// console.log('Pre look-rigt-down');
 	if( j_piece <= boardSize-1 && i_piece <= boardSize-1 ) {
 		if (typeof board[i_piece+1] != 'undefined') {
 			if (typeof board[i_piece+1][j_piece+1] != 'undefined') {
-				// console.log('Entrou look-rigt-down');
 				if( board[i_piece+1][j_piece+1] == opponent ) {
 					changeable_pieces.push( { i: i_piece+1, j: j_piece+1} );
-					// console.log('Entrou DEEP look-rigt-down');
 					for( i=i_piece+2, j=j_piece+2; i<boardSize && j<boardSize; i++, j++ ) {
 						if (typeof board[i][j] == 'undefined') {
 							break;
 						}
-						// if( i>= boardSize || j>=boardSize ) {
-						// 	break;
-						// }
-
 						if( board[i][j] == opponent ) {
 							changeable_pieces.push( {i: i, j: j} );
 							continue;
@@ -1106,16 +719,13 @@ function searchPossibleMovesLookRightDown( player, opponent, i_piece, j_piece, b
 						}
 						else if (board[i][j] == 0 ) {
 							moves.possible_moves[i][j] = 1;
-							// pieces_to_switch[i][j] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
 								Array.prototype.push.apply(moves.pieces_to_switch[i][j], changeable_pieces);
 							}
-							// printPiecesToSwitch();
 							break;
 						}
 						else {
-							// console.log('Erro inesperado - look right-down');
-							alert('Erro inesperado no searchPossibleMoves');
+							// alert('Erro inesperado no searchPossibleMoves');
 						}
 					}
 				}
@@ -1129,14 +739,11 @@ function searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece, boar
 	// look left-up
 	var i, j;
 	var changeable_pieces = new Array();
-	// console.log('Pre look-left-up');
 	if( j_piece >= 1 && i_piece >= 1 ) {
-		// console.log('Entrou look-left-up');
 		if (typeof board[i_piece-1] != 'undefined') {
 			if (typeof board[i_piece-1][j_piece-1] != 'undefined') {
 				if( board[i_piece-1][j_piece-1] == opponent ) {
 					changeable_pieces.push( { i: i_piece-1, j: j_piece-1} );
-					// console.log('Entrou DEEP look-left-up');
 					for( i=i_piece-2, j=j_piece-2; i>=0 && j>=0 ; i--, j--) {
 						if (typeof board[i][j] == 'undefined') {
 							break;
@@ -1150,16 +757,12 @@ function searchPossibleMovesLookLeftUp( player, opponent, i_piece, j_piece, boar
 						}
 						else if (board[i][j] == 0 ) {
 							moves.possible_moves[i][j] = 1;
-							// pieces_to_switch[i][j] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
 								Array.prototype.push.apply(moves.pieces_to_switch[i][j], changeable_pieces);
 							}
-							// printPiecesToSwitch();
 							break;
 						}
 						else {
-							// console.log('Erro inesperado - look left-up');
-							alert('Erro inesperado no searchPossibleMoves');
 							// alert('Erro inesperado no searchPossibleMoves');
 						}
 					}
@@ -1174,14 +777,11 @@ function searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece, boa
 	// look right-up
 	var i, j;
 	var changeable_pieces = new Array();
-	// console.log('Pre look-rigtup');
 	if( j_piece <= boardSize-2 && i_piece >= 1 ) {
-		// console.log('Entrou look-rigt-up');
 		if (typeof board[i_piece-1] != 'undefined') {
 			if (typeof board[i_piece-1][j_piece+1] != 'undefined') {
 				if( board[i_piece-1][j_piece+1] == opponent ) {
 					changeable_pieces.push( { i: i_piece-1, j: j_piece+1} );
-					// console.log('Entrou DEEP look-rigt-up');
 					for( i=i_piece-2, j=j_piece+2; i>=0 && j<boardSize; i--, j++ ) {
 						if (typeof board[i][j] == 'undefined') {
 							break;
@@ -1195,16 +795,12 @@ function searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece, boa
 						}
 						else if (board[i][j] == 0 ) {
 							moves.possible_moves[i][j] = 1;
-							// pieces_to_switch[i][j] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
 								Array.prototype.push.apply(moves.pieces_to_switch[i][j], changeable_pieces);
 							}
-							// printPiecesToSwitch();
 							break;
 						}
 						else {
-							// console.log('Erro inesperado - look right-up');
-							alert('Erro inesperado no searchPossibleMoves');
 							// alert('Erro inesperado no searchPossibleMoves');
 						}
 					}
@@ -1218,14 +814,12 @@ function searchPossibleMovesLookRightUp( player, opponent, i_piece, j_piece, boa
 function searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece, board, moves ) {
 	var i, j;
 	var changeable_pieces = new Array();
-	// // look left-down
-	// console.log('Pre left-down');
+	// look left-down
 	if( j_piece >= 1 && i_piece <= boardSize ) {
 		if (typeof board[i_piece+1] != 'undefined') {
 			if (typeof board[i_piece+1][j_piece-1] != 'undefined') {
 				if( board[i_piece+1][j_piece-1] == opponent ) {
 					changeable_pieces.push( { i: i_piece+1, j: j_piece-1} );
-					// console.log('Entrou DEEP left-down');
 					for( i=i_piece+2, j=j_piece-2; i<boardSize && j>=0; i++, j--) {
 						if (typeof board[i][j] == 'undefined') {
 							break;
@@ -1239,16 +833,12 @@ function searchPossibleMovesLookLeftDown( player, opponent, i_piece, j_piece, bo
 						}
 						else if ( board[i][j] == 0 ) {
 							moves.possible_moves[i][j] = 1;
-							// pieces_to_switch[i][j] = changeable_pieces;
 							if( changeable_pieces.length > 0 ) {
 								Array.prototype.push.apply(moves.pieces_to_switch[i][j], changeable_pieces);
 							}
-							// printPiecesToSwitch();
 							break;
 						}
 						else {
-							// console.log('Erro inesperado - look left-down');
-							alert('Erro inesperado no searchPossibleMoves');
 							// alert('Erro inesperado no searchPossibleMoves');
 						}
 					}
@@ -1273,8 +863,6 @@ function addPiece( event ) {
 	var mousePos = getMousePos(canvas, event);
 	var x = mousePos.x;
 	var y = mousePos.y;
-	//var h_space = parseInt( ( x - x_offset ) / space_size );
-	//var v_space = parseInt( ( y - y_offset ) / space_size );
 	var i, j;
 
 	if( x >= x_offset && x <= ( boardWidth + x_offset) && y >= y_offset && y <= ( boardHeight + y_offset) ) {
@@ -1293,7 +881,6 @@ function addPiece( event ) {
 				ret = IN_BOARD_VALID;
 			}
 			else {							// Se casa está vazia mas movimento é inválido
-				// alert('Você deve posicionar uma peça numa posição válida - marcada por uma cor diferente');
 				ret = IN_BOARD_INVALID;
 			}
 		}
@@ -1308,30 +895,6 @@ function getMousePos(canvas, evt) {
 		x: evt.clientX - rect.left,
 		y: evt.clientY - rect.top
 	};
-}
-
-function initializePiecesToSwitch() {
-	pieces_to_switch = new Array(boardSize);
-	for (var i = 0; i < boardSize; i++) {
-		pieces_to_switch[i] = new Array(boardSize);
-	}
-	for (var i = 0; i < boardSize; i++) {
-		for (var j = 0; j < boardSize; j++) {
-			pieces_to_switch[i][j] = new Array();
-		}
-	}
-}
-
-function initializePossibleMoves() {
-	possible_moves = new Array(boardSize);
-	for (var i = 0; i < boardSize; i++) {
-		possible_moves[i] = new Array(boardSize);
-	}
-	for (var i = 0; i < boardSize; i++) {
-		for (var j = 0; j < boardSize; j++) {
-			possible_moves[i][j] = 0;
-		}
-	}
 }
 
 // Inicializa tabuleiro com todas as casas vazias - board[a][b] diz respeito à linha a e coluna b
@@ -1387,9 +950,6 @@ function drawCanvas( board, possible_moves ) {
 
 // Imprime parte da tela que informará quantas peças cada jogador tem e de quem é o turno
 function drawTurnControl() {
-	//var width = screenWidth - boardWidth - 3*x_offset;
-	//var height = screenHeight - 2*y_offset;
-
 	var x_start = 2*x_offset + boardWidth;
 	var y_start = y_offset + 30;
 
@@ -1432,21 +992,6 @@ function drawTurnControl() {
 
 }
 
-function drawPossibleMoves_unused() {
-	// Desenha casas para os quais os movimentos são válidos
-	var i,j;
-	for( i=0; i<boardSize; i++ ) {
-		for( j=0; j<boardSize; j++ ) {
-			if( possible_moves[i][j] == 1 ) {
-				drawFilledSquare( i*space_size + x_offset, j*space_size + y_offset, space_size );
-			}
-			else {
-				// drawFilledSquareTest( i*space_size + x_offset, j*space_size + y_offset, space_size );
-			}
-		}
-	}
-}
-
 function drawPieces() {
 	// Desenha peças que já estão no tabuleiro
 	var i,j;
@@ -1469,15 +1014,11 @@ function drawBoard(board, possible_moves) {	// Desenha tabuleiro (todas as casas
 	var boardSize = board.length;
 	for(var i=0; i<boardSize; i++ ) {
 		for(var j=0; j<boardSize; j++ ) {
-			// drawEmptySquare( i*space_size + x_offset, j*space_size + y_offset, space_size );
 			if( possible_moves[j][i] == 0 ) {
 				drawEmptySquare( i*space_size + x_offset, j*space_size + y_offset, space_size );
 			}
 			else {
 				drawFilledSquare( i*space_size + x_offset, j*space_size + y_offset, space_size );
-				// i*space_size + x_offset
-				// j*space_size + y_offset
-				// drawFilledSquare( j*space_size + y_offset, i*space_size + x_offset, space_size );
 			}
 
 
@@ -1575,3 +1116,18 @@ function printPiecesToSwitch() {
 	}
 }
 
+function printStateBoard(state) {
+	var s = "";
+	for(var i=0; i<state.board.length; i++) {
+		for(var j=0; j<state.board.length; j++) {
+			s += state.board[i][j];
+		}
+		s += "\n"
+	}
+	return s;
+}
+
+function printState(state) {
+	var s = "Depth: " + state.depth + "\nUtility: " + state.utility + "\nPlayerTurn: " + state.player_turn;
+	return s;
+}
