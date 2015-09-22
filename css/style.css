@@ -88,6 +88,17 @@ canvas { border: 1px solid black; }
   cursor: pointer;
 }
 
+#btn_play.disabled, #btn_instructions.disabled, #btn_options.disabled{
+  background-color: #c7c7c7;
+  border-color: #d5d5d5;
+  cursor: default;
+}
+
+#btn_play.disabled:hover, #btn_instructions.disabled:hover, #btn_options.disabled:hover{
+  background-color: #c7c7c7;
+  border-color: #d5d5d5;
+}
+
 #btn_play:hover, #btn_instructions:hover, #btn_options:hover{
   background-color: #00AF17;
   border-color: #008E04;
@@ -112,17 +123,28 @@ canvas { border: 1px solid black; }
 
 hr.hr-footer{ position: absolute; bottom: 25px; width: 100%; }
 
+.instrucoes-content{
+  background-color: #ededed;
+  padding: 1px 15px 10px;
+}
+
 /* ------- Media queries -- Para responsividade ------- */
 
 /* Small devices (landscape phones, 34em and up) */
-@media (min-width: 34em) { }
+@media (min-width: 34em) {
+  body{ padding: 0 ;}
+  .instrucoes-content { width: 97%; margin: 0 auto; }
+ }
 
 /* Medium devices (tablets, 48em and up) */
-@media (min-width: 48em) { }
+@media (min-width: 48em) {
+  /*.instrucoes-content { width: 100%; margin: 0 auto; }*/
+}
 
 /* Large devices (desktops, 62em and up) */
 @media (min-width: 62em) {
   .main-menu{ width: 50%; }
+  .instrucoes-content {width: 90%; margin: 0 auto;  }
 }
 
 /* Extra large devices (large desktops, 75em and up) */
@@ -130,7 +152,9 @@ hr.hr-footer{ position: absolute; bottom: 25px; width: 100%; }
 
 
 /* Small devices (portrait phones, less than 34em) */
-@media (max-width: 33.9em) { }
+@media (max-width: 33.9em) {
+
+ }
 
 /* Small devices (landscape phones, less than 48em) */
 @media (max-width: 47.9em) { }

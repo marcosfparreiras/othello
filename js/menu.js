@@ -7,7 +7,7 @@ var play_button = document.getElementById('btn_play');
 var instructions_button = document.getElementById('btn_instructions');
 var options_button = document.getElementById('btn_options');
 
-play_button.onclick = function(){ window.location = 'index.html'}
+play_button.onclick = function(){ window.location = 'game.html'}
 instructions_button.onclick = function(){ window.location = 'instrucoes.html'}
 options_button.onclick = function(){ window.location = 'opcoes.html'}
 

@@ -1,55 +1,26 @@
-<!DOCTYPE html>
+<!DOCTYPE <!DOCTYPE html>
 <html>
-	<head>
-		<title>Othello HTML5</title>
-		<meta charset="UTF-8">
-        <script src="js/main.js"></script>
-        <script src="js/jquery-1.11.3.js"></script>
-        <link rel="stylesheet" href="css/style.css" />
-	</head>
-	<body>
-		<!-- <audio src="audio/audio.ogg" controls autoplay loop> -->
-		<!-- Carrega sons das peças -->
-		<audio id="add_piece_ok">
-			<!-- <source src="audio/add_piece_ok_two_parts.wav" /> -->
-			<source src="audio/add_piece_ok_metal.wav" />
-			<p>Seu navegador não suporta o elemento audio </p>
-		</audio>
-		<audio id="add_piece_error">
-			<source src="audio/add_piece_error.wav" />
-			<p>Seu navegador não suporta o elemento audio </p>
-		</audio>
-
-		<!-- Carrega som de fundo -->
-		<audio id="backgroud_sound" loop preload="auto">
-			<source src="audio/backgroud_sound.mp3" />
-			<p>Seu navegador não suporta o elemento audio </p>
-		</audio>
-
-		<canvas id="canvas" ></canvas>
-
-		<div id="sound_config">
-			<div class="option-title">Ajustes de Som</div>
-			<hr>
-			<div id="music_control">
-				<span>Música:</span>
-				<span>
-					<button class="btn reproduzir" onclick="document.getElementById('backgroud_sound').play()">Reproduzir</button>
-				</span>
-				<span>
-					<button class="btn pausar" onclick="document.getElementById('backgroud_sound').pause()">Pausar</button>
-				</span>
-			</div>
-			<hr>
-			<div id="volume_control">
-				<span>Volume:</span>
-				<span>
-					<button class="btn aumentar" onclick="document.getElementById('backgroud_sound').volume+=0.1">Aumentar</button>
-				</span>
-				<span>
-					<button class="btn diminuir" onclick="document.getElementById('backgroud_sound').volume-=0.1">Diminuir</button>
-				</span>
-			</div>
-		</div>
-	</body>
+<head>
+  <title>Othello HTML5</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="main-menu">
+    <div class="game-title">OTHELLO</div>
+    <hr>
+    <div class="menu-options">
+      <ul>
+        <li><button id="btn_play">JOGAR</button></li>
+        <li><button id="btn_instructions">INSTRUÇÕES</button></li>
+        <li><button id="btn_options" class="disabled" disabled>OPÇÕES</button></li>
+      </ul>
+    </div>
+    <hr class="hr-footer">
+    <div class="developed-by">
+      <span>Desenvolvido por: Fernando Leite - Lucas Medeiros - Marcos Parreiras</span>
+    </div>
+  </nav>
+</body>
+<script src="js/menu.js"></script>
 </html>
