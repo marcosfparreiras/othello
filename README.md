@@ -18,3 +18,7 @@ As funcionalidades que pretendemos ainda implementar são: </br>
 	7.1- Ter um modo de jogo multiplayer não-local para 2 jogadores (X%) - Jogo realmente online </br>
 	7.1- Dar opção ao usuário de escolha de cor de fundo (e de peças)
 
+### Screenshots ###
+![alt tag](https://github.com/marcosfparreiras/othello/blob/master/images/screenshot1.png)
+![alt tag](https://github.com/marcosfparreiras/othello/blob/master/images/screenshot2.png)
+![alt tag](https://github.com/marcosfparreiras/othello/blob/master/images/screenshot3.png)
