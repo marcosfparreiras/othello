@@ -25,3 +25,5 @@ As funcionalidades que pretendemos ainda implementar são: </br>
 ![alt tag](https://github.com/marcosfparreiras/othello/blob/master/images/screenshot2.png)
 ##### Screenshot 3 - Decorrer de uma partida #####
 ![alt tag](https://github.com/marcosfparreiras/othello/blob/master/images/screenshot3.png)
+##### Screenshot 4 - Fim de uma partida #####
+![alt tag](https://github.com/marcosfparreiras/othello/blob/master/images/screenshot4.png)
