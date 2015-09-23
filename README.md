@@ -18,6 +18,10 @@ As funcionalidades que pretendemos ainda implementar são: </br>
 	7.1- Ter um modo de jogo multiplayer não-local para 2 jogadores (X%) - Jogo realmente online </br>
 	7.1- Dar opção ao usuário de escolha de cor de fundo (e de peças)
 
+### Decisões de Implementação ###
+Com o intuito de facilitar a portabilidade, desenvolvemos o jogo em HTML5 e JavaScript por serem suportados pelas versões atuais dos browsers mais utilizados. Parte do código foi implementada utilizando a biblioteca JQuery. Nenhuma outra ferramenta adicional foi utilizada.
+A função de avaliação utilizada baseia-se na diferença entre o número de peças dos jogadores e no número de peças nas quinas do tabuleiro.
+
 ### Screenshots ###
 ##### Screenshot 1 - Menu inicial #####
 ![alt tag](https://github.com/marcosfparreiras/othello/blob/master/images/screenshot1.png)
