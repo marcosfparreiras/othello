@@ -19,6 +19,9 @@ As funcionalidades que pretendemos ainda implementar são: </br>
 	7.1- Dar opção ao usuário de escolha de cor de fundo (e de peças)
 
 ### Screenshots ###
+##### Screenshot 1 - Menu inicial #####
 ![alt tag](https://github.com/marcosfparreiras/othello/blob/master/images/screenshot1.png)
+##### Screenshot 2 - Início de uma partida #####
 ![alt tag](https://github.com/marcosfparreiras/othello/blob/master/images/screenshot2.png)
+##### Screenshot 3 - Decorrer de uma partida #####
 ![alt tag](https://github.com/marcosfparreiras/othello/blob/master/images/screenshot3.png)
